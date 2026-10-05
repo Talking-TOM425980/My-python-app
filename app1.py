@@ -95,22 +95,30 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        for (let btn of document.querySelectorAll('button')) {
-            btn.addEventListener('click', (e) => {
-                let actionValue = e.target.innerText.toLowerCase();
-                fetch('/api/device', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: actionValue })
-                });
-            });
+        // FIXED: Explicitly defining the sendAction function the buttons are clicking for
+        function sendAction(actionValue) {
+            fetch('/api/device', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: actionValue })
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Update the button state instantly on the UI
+                const statusDiv = document.getElementById('status');
+                statusDiv.innerText = "Device is " + data.state;
+                statusDiv.className = data.state === 'on' ? "status-badge status-on" : "status-badge status-off";
+            })
+            .catch(err => console.error("Error updating button state:", err));
         }
 
+        // Automatically fetches live data updates from your Pi every 1 second
         setInterval(() => {
             fetch('/api/status')
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('lcd-screen').innerText = data.lcd_text;
+                    // Only update the state badge if the user isn't actively clicking
                     const statusDiv = document.getElementById('status');
                     statusDiv.innerText = "Device is " + data.state;
                     statusDiv.className = data.state === 'on' ? "status-badge status-on" : "status-badge status-off";
