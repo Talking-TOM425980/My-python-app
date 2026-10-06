@@ -6,9 +6,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-# Determine safe path for SQLite database (works locally and on Render)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "database.db")
+# Use /tmp directory on Render/Linux to avoid read-only filesystem permission crashes
+DB_PATH = "/tmp/database.db" if os.path.exists("/tmp") else os.path.join(os.path.dirname(__file__), "database.db")
 
 
 def get_db_connection():
@@ -39,6 +38,7 @@ def init_db():
                 lcd_text TEXT NOT NULL
             )
         ''')
+
         cursor.execute('''
             INSERT OR IGNORE INTO telemetry (id, device_state, lcd_text) 
             VALUES (1, 'off', 'System Initializing...\nWaiting for Raspberry Pi connection...')
@@ -46,12 +46,12 @@ def init_db():
 
         conn.commit()
         conn.close()
-        print("Database initialized successfully at:", DB_PATH)
+        print(f"Database successfully initialized at {DB_PATH}")
     except Exception as e:
         print(f"Database Initialization Error: {e}")
 
 
-# Initialize database on startup
+# Initialize database
 init_db()
 
 
@@ -141,7 +141,7 @@ def get_status():
             return jsonify(state=row["device_state"], lcd_text=row["lcd_text"])
         return jsonify(state="off", lcd_text="System Initializing...")
     except Exception as e:
-        return jsonify(state="off", lcd_text=f"Error reading DB: {e}"), 500
+        return jsonify(state="off", lcd_text=f"Database error: {e}"), 500
 
 
 @app.route("/api/device", methods=["POST"])
