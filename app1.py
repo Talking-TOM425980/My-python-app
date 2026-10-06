@@ -6,14 +6,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-# Use /tmp directory on Render/Linux to avoid read-only filesystem permission crashes
-DB_PATH = "/tmp/database.db" if os.path.exists("/tmp") else os.path.join(os.path.dirname(__file__), "database.db")
+# Path configuration for Render environment
+DB_PATH = "/tmp/database.db" if os.path.exists("/tmp") else "database.db"
 
 
 def get_db_connection():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+    try:
+        conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+        conn.row_factory = sqlite3.Row
+        return conn
+    except Exception as e:
+        # Fallback to in-memory database if file permissions fail completely
+        print(f"File DB failed, falling back to memory DB: {e}")
+        conn = sqlite3.connect(":memory:", check_same_thread=False)
+        conn.row_factory = sqlite3.Row
+        return conn
 
 
 def init_db():
@@ -67,8 +74,11 @@ def home():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        if not username or not password:
+            return "Missing username or password", 400
 
         try:
             conn = get_db_connection()
@@ -91,8 +101,8 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username")
+        password = request.form.get("password")
 
         try:
             conn = get_db_connection()
@@ -176,4 +186,6 @@ def control_device():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Bind to host 0.0.0.0 and dynamic port assigned by Render, with debug turned OFF
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
