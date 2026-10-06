@@ -56,7 +56,7 @@ HTML_TEMPLATE = """
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 50% 30%, rgba(255, 0, 128, 0.25) 0%, transparent 70%);
+            background: radial-gradient(circle at 50% 30%, rgba(168, 85, 247, 0.25) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -73,11 +73,11 @@ HTML_TEMPLATE = """
             background: rgba(15, 7, 26, 0.78);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 0, 128, 0.3);
+            border: 1px solid rgba(168, 85, 247, 0.35);
             border-radius: 24px;
             padding: 32px 28px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6),
-                        0 0 30px rgba(236, 72, 153, 0.2);
+                        0 0 30px rgba(168, 85, 247, 0.25);
             text-align: center;
             transition: all 0.3s ease;
         }
@@ -86,33 +86,33 @@ HTML_TEMPLATE = """
             display: none !important;
         }
 
-        /* Vibrant Titles */
+        /* Updated White & Purple Titles (No Italics) */
         .title {
             font-size: 30px;
             font-weight: 900;
-            font-style: italic;
+            font-style: normal; /* Italics removed */
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            background: linear-gradient(180deg, #ffffff 10%, #ff71ce 60%, #b92b88 100%);
+            background: linear-gradient(180deg, #ffffff 15%, #d8b4fe 65%, #a855f7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(255, 113, 206, 0.6);
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
             margin-bottom: 4px;
         }
 
         .subtitle {
-            color: #f472b6;
+            color: #c084fc;
             font-size: 13px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 20px;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
         /* Features List on Welcome Screen */
         .desc-text {
-            color: #cbd5e1;
+            color: #e2e8f0;
             font-size: 14px;
             line-height: 1.6;
             margin-bottom: 20px;
@@ -135,7 +135,7 @@ HTML_TEMPLATE = """
         }
 
         .features-list span {
-            color: #ff71ce;
+            color: #c084fc;
             font-weight: bold;
         }
 
@@ -151,7 +151,7 @@ HTML_TEMPLATE = """
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            color: #fb7185;
+            color: #e9d5ff;
             margin-bottom: 6px;
         }
 
@@ -159,7 +159,7 @@ HTML_TEMPLATE = """
             width: 100%;
             padding: 14px 16px;
             background: rgba(10, 4, 18, 0.8);
-            border: 1px solid rgba(244, 114, 182, 0.3);
+            border: 1px solid rgba(192, 132, 252, 0.35);
             border-radius: 12px;
             color: #38bdf8;
             font-family: 'Share Tech Mono', monospace;
@@ -169,8 +169,8 @@ HTML_TEMPLATE = """
         }
 
         .input-field:focus {
-            border-color: #ff71ce;
-            box-shadow: 0 0 12px rgba(255, 113, 206, 0.5);
+            border-color: #c084fc;
+            box-shadow: 0 0 12px rgba(192, 132, 252, 0.5);
         }
 
         /* Action Buttons */
@@ -195,15 +195,15 @@ HTML_TEMPLATE = """
         }
 
         .btn-primary {
-            background: linear-gradient(90deg, #ec4899 0%, #f43f5e 100%);
+            background: linear-gradient(90deg, #9333ea 0%, #7e22ce 100%);
             color: #ffffff;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+            box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
         }
 
         .toggle-link {
             display: block;
             margin-top: 16px;
-            color: #94a3b8;
+            color: #cbd5e1;
             font-size: 12px;
             text-decoration: none;
             cursor: pointer;
@@ -211,7 +211,7 @@ HTML_TEMPLATE = """
         }
 
         .toggle-link:hover {
-            color: #f472b6;
+            color: #e9d5ff;
         }
 
         /* Terminal-style LCD Display */
