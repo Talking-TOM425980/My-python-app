@@ -14,7 +14,9 @@ HTML_TEMPLATE = """
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f4f6f9;
+            /* GTA VI Sunset / Synthwave Linear Gradient */
+            background: linear-gradient(135deg, #18032b 0%, #4c005c 30%, #a21268 60%, #f95d31 85%, #ffbc42 100%);
+            background-attachment: fixed;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -22,10 +24,11 @@ HTML_TEMPLATE = """
             height: 100vh;
         }
         .card {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
             padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             text-align: center;
             width: 340px;
         }
@@ -95,7 +98,6 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        // FIXED: Explicitly defining the sendAction function the buttons are clicking for
         function sendAction(actionValue) {
             fetch('/api/device', {
                 method: 'POST',
@@ -104,7 +106,6 @@ HTML_TEMPLATE = """
             })
             .then(res => res.json())
             .then(data => {
-                // Update the button state instantly on the UI
                 const statusDiv = document.getElementById('status');
                 statusDiv.innerText = "Device is " + data.state;
                 statusDiv.className = data.state === 'on' ? "status-badge status-on" : "status-badge status-off";
@@ -112,13 +113,11 @@ HTML_TEMPLATE = """
             .catch(err => console.error("Error updating button state:", err));
         }
 
-        // Automatically fetches live data updates from your Pi every 1 second
         setInterval(() => {
             fetch('/api/status')
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('lcd-screen').innerText = data.lcd_text;
-                    // Only update the state badge if the user isn't actively clicking
                     const statusDiv = document.getElementById('status');
                     statusDiv.innerText = "Device is " + data.state;
                     statusDiv.className = data.state === 'on' ? "status-badge status-on" : "status-badge status-off";
