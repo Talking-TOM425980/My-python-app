@@ -6,37 +6,52 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+# Determine safe path for SQLite database (works locally and on Render)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database.db")
+
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
 
 def init_db():
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
-    
-    # 1. Users table (Existing)
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL
-        )
-    ''')
-    
-    # 2. Telemetry table (Added to persist LCD & device state)
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS telemetry (
-            id INTEGER PRIMARY KEY CHECK (id = 1),
-            device_state TEXT NOT NULL,
-            lcd_text TEXT NOT NULL
-        )
-    ''')
-    cursor.execute('''
-        INSERT OR IGNORE INTO telemetry (id, device_state, lcd_text) 
-        VALUES (1, 'off', 'System Initializing...\nWaiting for Raspberry Pi telemetry...')
-    ''')
-    
-    conn.commit()
-    conn.close()
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # 1. Users table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL
+            )
+        ''')
+
+        # 2. Telemetry table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS telemetry (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                device_state TEXT NOT NULL,
+                lcd_text TEXT NOT NULL
+            )
+        ''')
+        cursor.execute('''
+            INSERT OR IGNORE INTO telemetry (id, device_state, lcd_text) 
+            VALUES (1, 'off', 'System Initializing...\nWaiting for Raspberry Pi connection...')
+        ''')
+
+        conn.commit()
+        conn.close()
+        print("Database initialized successfully at:", DB_PATH)
+    except Exception as e:
+        print(f"Database Initialization Error: {e}")
 
 
+# Initialize database on startup
 init_db()
 
 
@@ -55,19 +70,20 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("database.db")
-        cursor = conn.cursor()
         try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
             cursor.execute(
                 "INSERT INTO users (username, password_hash) VALUES (?, ?)",
                 (username, generate_password_hash(password))
             )
             conn.commit()
+            conn.close()
             return redirect(url_for("login"))
         except sqlite3.IntegrityError:
             return "Username already exists!", 400
-        finally:
-            conn.close()
+        except Exception as e:
+            return f"Database Error: {e}", 500
 
     return render_template("register.html")
 
@@ -78,17 +94,20 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("database.db")
-        cursor = conn.cursor()
-        cursor.execute("SELECT password_hash FROM users WHERE username = ?", (username,))
-        user = cursor.fetchone()
-        conn.close()
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT password_hash FROM users WHERE username = ?", (username,))
+            user = cursor.fetchone()
+            conn.close()
 
-        if user and check_password_hash(user[0], password):
-            session["user"] = username
-            return redirect(url_for("dashboard"))
+            if user and check_password_hash(user["password_hash"], password):
+                session["user"] = username
+                return redirect(url_for("dashboard"))
 
-        return "Invalid Credentials", 401
+            return "Invalid Credentials", 401
+        except Exception as e:
+            return f"Database Error: {e}", 500
 
     return render_template("login.html")
 
@@ -110,42 +129,50 @@ def dashboard():
 
 @app.route("/api/status", methods=["GET"])
 def get_status():
-    """Returns current device state and LCD screen text to the browser dashboard."""
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT device_state, lcd_text FROM telemetry WHERE id = 1")
-    row = cursor.fetchone()
-    conn.close()
+    """Returns current device state and LCD screen text to dashboard."""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT device_state, lcd_text FROM telemetry WHERE id = 1")
+        row = cursor.fetchone()
+        conn.close()
 
-    if row:
-        return jsonify(state=row[0], lcd_text=row[1])
-    return jsonify(state="off", lcd_text="System Initializing...")
+        if row:
+            return jsonify(state=row["device_state"], lcd_text=row["lcd_text"])
+        return jsonify(state="off", lcd_text="System Initializing...")
+    except Exception as e:
+        return jsonify(state="off", lcd_text=f"Error reading DB: {e}"), 500
 
 
 @app.route("/api/device", methods=["POST"])
 def control_device():
-    """Receives live updates from the Raspberry Pi or dashboard commands."""
+    """Receives live updates from Raspberry Pi."""
     data = request.get_json(silent=True) or {}
     new_state = data.get("action")
     new_lcd = data.get("lcd_text")
 
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
-    if new_state and new_lcd:
-        cursor.execute("UPDATE telemetry SET device_state = ?, lcd_text = ? WHERE id = 1", (new_state, new_lcd))
-    elif new_state:
-        cursor.execute("UPDATE telemetry SET device_state = ? WHERE id = 1", (new_state,))
-    elif new_lcd:
-        cursor.execute("UPDATE telemetry SET lcd_text = ? WHERE id = 1", (new_lcd,))
+        if new_state and new_lcd:
+            cursor.execute("UPDATE telemetry SET device_state = ?, lcd_text = ? WHERE id = 1", (new_state, new_lcd))
+        elif new_state:
+            cursor.execute("UPDATE telemetry SET device_state = ? WHERE id = 1", (new_state,))
+        elif new_lcd:
+            cursor.execute("UPDATE telemetry SET lcd_text = ? WHERE id = 1", (new_lcd,))
 
-    conn.commit()
+        conn.commit()
 
-    cursor.execute("SELECT device_state, lcd_text FROM telemetry WHERE id = 1")
-    row = cursor.fetchone()
-    conn.close()
+        cursor.execute("SELECT device_state, lcd_text FROM telemetry WHERE id = 1")
+        row = cursor.fetchone()
+        conn.close()
 
-    return jsonify(state=row[0], lcd_text=row[1])
+        if row:
+            return jsonify(state=row["device_state"], lcd_text=row["lcd_text"])
+        return jsonify(state=new_state or "off", lcd_text=new_lcd or "")
+    except Exception as e:
+        return jsonify(error=str(e)), 500
 
 
 if __name__ == "__main__":
