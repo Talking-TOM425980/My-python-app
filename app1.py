@@ -1,6 +1,3 @@
-Here is the updated complete code. It removes any explicit mentions of "Vice City" while fully keeping the vibrant neon cyberpunk aesthetic, and adds inline error handling directly onto the login and registration screens.
-
-```python
 import os
 import sqlite3
 from flask import Flask, render_template_string, request, redirect, url_for, session, jsonify
@@ -577,5 +574,3 @@ if __name__ == "__main__":
     # Render assigns dynamic port numbers via os.environ
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
-
-```
