@@ -20,8 +20,8 @@ LOGIN_HTML = """
     <style>
         * { box-sizing: border-box; }
         body { 
-            font-family: 'Trebuchet MS', 'Impact', sans-serif; 
-            background: linear-gradient(135deg, #0f051d 0%, #2e114d 50%, #03001e 100%); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); 
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -36,96 +36,97 @@ LOGIN_HTML = """
             position: absolute;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,0,127,0.15) 0%, rgba(0,242,254,0.05) 50%, transparent 70%);
+            background: radial-gradient(circle, rgba(0,255,136,0.12) 0%, rgba(0,242,254,0.04) 50%, transparent 70%);
             z-index: 0;
             pointer-events: none;
         }
         .card { 
             position: relative;
             z-index: 1;
-            background: rgba(18, 10, 36, 0.85); 
-            backdrop-filter: blur(12px);
+            background: rgba(10, 26, 20, 0.85); 
+            backdrop-filter: blur(14px);
             padding: 40px 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 0 25px rgba(255, 0, 127, 0.35), inset 0 0 15px rgba(0, 242, 254, 0.15); 
-            border: 2px solid #ff007f;
-            width: 340px; 
+            border-radius: 14px; 
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2), inset 0 0 15px rgba(0, 242, 254, 0.1); 
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            width: 350px; 
             text-align: center; 
         }
         h2 { 
             margin: 0;
-            font-size: 32px; 
+            font-size: 28px; 
             text-transform: uppercase; 
             letter-spacing: 2px;
-            color: #ff007f; 
-            text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f; 
-            font-style: italic;
+            color: #00ff88; 
+            text-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+            font-weight: 700;
         }
         h3 { 
-            margin: 5px 0 20px 0;
-            font-size: 18px; 
+            margin: 5px 0 25px 0;
+            font-size: 14px; 
             color: #00f2fe; 
             letter-spacing: 3px; 
             text-transform: uppercase;
-            text-shadow: 0 0 8px #00f2fe;
+            text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+            font-weight: 500;
         }
         input { 
             width: 100%; 
-            padding: 12px; 
+            padding: 12px 16px; 
             margin: 10px 0; 
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid #00f2fe; 
-            border-radius: 6px; 
+            background: rgba(4, 16, 12, 0.8);
+            border: 1px solid rgba(0, 242, 254, 0.3); 
+            border-radius: 8px; 
             color: #ffffff;
-            font-size: 15px;
+            font-size: 14px;
             outline: none;
             transition: all 0.3s ease;
         }
         input:focus {
-            border-color: #ff007f;
-            box-shadow: 0 0 10px #ff007f;
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
         }
         button { 
             width: 100%; 
             padding: 12px; 
             margin-top: 15px;
-            background: linear-gradient(90deg, #ff007f, #7928ca); 
-            color: white; 
+            background: linear-gradient(90deg, #00ff88, #00b0ff); 
+            color: #04100c; 
             border: none; 
-            border-radius: 6px; 
-            font-size: 16px;
-            font-weight: bold; 
+            border-radius: 8px; 
+            font-size: 15px;
+            font-weight: 700; 
             text-transform: uppercase;
             letter-spacing: 1.5px;
             cursor: pointer; 
-            box-shadow: 0 0 12px rgba(255, 0, 127, 0.5);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
             transition: all 0.3s ease;
         }
         button:hover { 
-            background: linear-gradient(90deg, #00f2fe, #4facfe); 
-            box-shadow: 0 0 20px #00f2fe;
-            color: #000;
+            background: linear-gradient(90deg, #00f2fe, #00ff88); 
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+            transform: translateY(-1px);
         }
         .error-msg {
-            background-color: rgba(255, 0, 85, 0.2);
-            color: #ff0055;
-            border: 1px solid #ff0055;
+            background-color: rgba(255, 0, 85, 0.15);
+            color: #ff3366;
+            border: 1px solid rgba(255, 51, 102, 0.4);
             padding: 10px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-bottom: 15px;
-            font-size: 14px;
-            font-weight: bold;
-            box-shadow: 0 0 8px #ff0055;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 0 8px rgba(255, 51, 102, 0.2);
         }
-        p { margin-top: 20px; font-size: 14px; color: #b3b3b3; }
-        a { color: #00f2fe; text-decoration: none; font-weight: bold; text-shadow: 0 0 5px #00f2fe; }
-        a:hover { color: #ff007f; text-shadow: 0 0 8px #ff007f; }
+        p { margin-top: 25px; font-size: 13px; color: #8fa39b; }
+        a { color: #00f2fe; text-decoration: none; font-weight: 600; transition: color 0.2s; }
+        a:hover { color: #00ff88; text-shadow: 0 0 6px rgba(0, 255, 136, 0.4); }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>Plant Net</h2>
-        <h3>Login</h3>
+        <h3>Secure Access</h3>
         {% if error %}
             <div class="error-msg">{{ error }}</div>
         {% endif %}
@@ -134,7 +135,7 @@ LOGIN_HTML = """
             <input type="password" name="password" placeholder="Password" required><br>
             <button type="submit">Sign In</button>
         </form>
-        <p>Don't have an account? <a href="/register">Register</a></p>
+        <p>New ecosystem account? <a href="/register">Register</a></p>
     </div>
 </body>
 </html>
@@ -149,8 +150,8 @@ REGISTER_HTML = """
     <style>
         * { box-sizing: border-box; }
         body { 
-            font-family: 'Trebuchet MS', 'Impact', sans-serif; 
-            background: linear-gradient(135deg, #0f051d 0%, #2e114d 50%, #03001e 100%); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); 
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -165,87 +166,87 @@ REGISTER_HTML = """
             position: absolute;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(0,242,254,0.15) 0%, rgba(255,0,127,0.05) 50%, transparent 70%);
+            background: radial-gradient(circle, rgba(0,242,254,0.12) 0%, rgba(0,255,136,0.04) 50%, transparent 70%);
             z-index: 0;
             pointer-events: none;
         }
         .card { 
             position: relative;
             z-index: 1;
-            background: rgba(18, 10, 36, 0.85); 
-            backdrop-filter: blur(12px);
+            background: rgba(10, 26, 20, 0.85); 
+            backdrop-filter: blur(14px);
             padding: 40px 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 0 25px rgba(0, 242, 254, 0.35), inset 0 0 15px rgba(255, 0, 127, 0.15); 
-            border: 2px solid #00f2fe;
-            width: 340px; 
+            border-radius: 14px; 
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.2), inset 0 0 15px rgba(0, 255, 136, 0.1); 
+            border: 1px solid rgba(0, 242, 254, 0.4);
+            width: 350px; 
             text-align: center; 
         }
         h2 { 
-            margin: 0 0 20px 0;
-            font-size: 28px; 
+            margin: 0 0 25px 0;
+            font-size: 26px; 
             text-transform: uppercase; 
             letter-spacing: 2px;
             color: #00f2fe; 
-            text-shadow: 0 0 10px #00f2fe, 0 0 20px #00f2fe; 
-            font-style: italic;
+            text-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+            font-weight: 700;
         }
         input { 
             width: 100%; 
-            padding: 12px; 
+            padding: 12px 16px; 
             margin: 10px 0; 
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid #ff007f; 
-            border-radius: 6px; 
+            background: rgba(4, 16, 12, 0.8);
+            border: 1px solid rgba(0, 255, 136, 0.3); 
+            border-radius: 8px; 
             color: #ffffff;
-            font-size: 15px;
+            font-size: 14px;
             outline: none;
             transition: all 0.3s ease;
         }
         input:focus {
             border-color: #00f2fe;
-            box-shadow: 0 0 10px #00f2fe;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
         }
         button { 
             width: 100%; 
             padding: 12px; 
             margin-top: 15px;
-            background: linear-gradient(90deg, #00f2fe, #4facfe); 
-            color: #000; 
+            background: linear-gradient(90deg, #00f2fe, #00ff88); 
+            color: #04100c; 
             border: none; 
-            border-radius: 6px; 
-            font-size: 16px;
-            font-weight: bold; 
+            border-radius: 8px; 
+            font-size: 15px;
+            font-weight: 700; 
             text-transform: uppercase;
             letter-spacing: 1.5px;
             cursor: pointer; 
-            box-shadow: 0 0 12px rgba(0, 242, 254, 0.5);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
             transition: all 0.3s ease;
         }
         button:hover { 
-            background: linear-gradient(90deg, #ff007f, #7928ca); 
-            box-shadow: 0 0 20px #ff007f;
-            color: #fff;
+            background: linear-gradient(90deg, #00ff88, #00f2fe); 
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            transform: translateY(-1px);
         }
         .error-msg {
-            background-color: rgba(255, 0, 85, 0.2);
-            color: #ff0055;
-            border: 1px solid #ff0055;
+            background-color: rgba(255, 0, 85, 0.15);
+            color: #ff3366;
+            border: 1px solid rgba(255, 51, 102, 0.4);
             padding: 10px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-bottom: 15px;
-            font-size: 14px;
-            font-weight: bold;
-            box-shadow: 0 0 8px #ff0055;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 0 8px rgba(255, 51, 102, 0.2);
         }
-        p { margin-top: 20px; font-size: 14px; color: #b3b3b3; }
-        a { color: #ff007f; text-decoration: none; font-weight: bold; text-shadow: 0 0 5px #ff007f; }
-        a:hover { color: #00f2fe; text-shadow: 0 0 8px #00f2fe; }
+        p { margin-top: 25px; font-size: 13px; color: #8fa39b; }
+        a { color: #00ff88; text-decoration: none; font-weight: 600; transition: color 0.2s; }
+        a:hover { color: #00f2fe; text-shadow: 0 0 6px rgba(0, 242, 254, 0.4); }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2>Create Account</h2>
+        <h2>Join Network</h2>
         {% if error %}
             <div class="error-msg">{{ error }}</div>
         {% endif %}
@@ -269,98 +270,103 @@ DASHBOARD_HTML = """
     <style>
         * { box-sizing: border-box; }
         body { 
-            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; 
-            background: linear-gradient(135deg, #0b0217 0%, #1d0936 50%, #03001e 100%); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); 
             min-height: 100vh;
             margin: 0; 
-            padding: 20px; 
+            padding: 30px; 
             color: #ffffff;
         }
         .header { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            background: rgba(18, 10, 36, 0.85); 
-            backdrop-filter: blur(10px);
-            padding: 20px 25px; 
-            border-radius: 12px; 
-            border: 1px solid #ff007f;
-            box-shadow: 0 0 15px rgba(255, 0, 127, 0.25); 
+            background: rgba(10, 26, 20, 0.85); 
+            backdrop-filter: blur(14px);
+            padding: 20px 30px; 
+            border-radius: 14px; 
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.15); 
+            max-width: 900px;
+            margin: 0 auto;
         }
         .header h2 {
             margin: 0;
-            font-size: 26px;
-            font-style: italic;
+            font-size: 22px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #ff007f;
-            text-shadow: 0 0 8px #ff007f;
+            color: #00ff88;
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+            font-weight: 700;
         }
         .container { 
-            background: rgba(18, 10, 36, 0.85); 
-            backdrop-filter: blur(10px);
-            padding: 30px; 
-            border-radius: 12px; 
-            margin-top: 25px; 
-            border: 1px solid #00f2fe;
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2); 
+            background: rgba(10, 26, 20, 0.85); 
+            backdrop-filter: blur(14px);
+            padding: 35px; 
+            border-radius: 14px; 
+            margin: 25px auto 0 auto; 
+            max-width: 900px;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.15); 
         }
         h3, h4 {
             color: #00f2fe;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            text-shadow: 0 0 6px #00f2fe;
+            text-shadow: 0 0 6px rgba(0, 242, 254, 0.4);
             margin-top: 0;
+            font-size: 16px;
         }
         .status-badge { 
             display: inline-block; 
-            padding: 8px 16px; 
+            padding: 6px 14px; 
             border-radius: 20px; 
-            font-weight: bold; 
+            font-weight: 700; 
             text-transform: uppercase; 
             letter-spacing: 1px;
-            font-size: 14px;
+            font-size: 13px;
         }
         .on { 
-            background-color: rgba(0, 255, 128, 0.2); 
-            color: #00ff80; 
-            border: 1px solid #00ff80;
-            box-shadow: 0 0 10px #00ff80;
+            background-color: rgba(0, 255, 136, 0.15); 
+            color: #00ff88; 
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
         }
         .off { 
-            background-color: rgba(255, 0, 85, 0.2); 
-            color: #ff0055; 
-            border: 1px solid #ff0055;
-            box-shadow: 0 0 10px #ff0055;
+            background-color: rgba(255, 51, 102, 0.15); 
+            color: #ff3366; 
+            border: 1px solid rgba(255, 51, 102, 0.4);
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
         }
         pre { 
-            background: #05020a; 
-            color: #ff007f; 
+            background: #020705; 
+            color: #00ff88; 
             padding: 20px; 
-            border-radius: 8px; 
-            border: 1px solid #ff007f;
-            box-shadow: inset 0 0 15px rgba(255, 0, 127, 0.3);
+            border-radius: 10px; 
+            border: 1px solid rgba(0, 255, 136, 0.25);
+            box-shadow: inset 0 0 15px rgba(0, 255, 136, 0.1);
             font-family: 'Courier New', Courier, monospace; 
-            font-size: 16px; 
+            font-size: 15px; 
             white-space: pre-wrap; 
             word-wrap: break-word; 
-            text-shadow: 0 0 5px #ff007f;
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
         }
         .logout-btn { 
-            color: #ff0055; 
+            color: #ff3366; 
             text-decoration: none; 
-            font-weight: bold; 
+            font-weight: 600; 
             text-transform: uppercase;
             letter-spacing: 1px;
-            border: 1px solid #ff0055;
-            padding: 6px 12px;
-            border-radius: 6px;
+            border: 1px solid rgba(255, 51, 102, 0.4);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
             transition: all 0.3s ease;
         }
         .logout-btn:hover {
-            background: #ff0055;
-            color: #fff;
-            box-shadow: 0 0 10px #ff0055;
+            background: #ff3366;
+            color: #04100c;
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
         }
     </style>
     <script>
@@ -385,13 +391,13 @@ DASHBOARD_HTML = """
 <body>
     <div class="header">
         <h2>Smart Plant System</h2>
-        <div>Welcome, <strong style="color: #00f2fe; text-shadow: 0 0 5px #00f2fe;">{{ username }}</strong> | <a href="/logout" class="logout-btn">Logout</a></div>
+        <div>Eco-User: <strong style="color: #00f2fe; text-shadow: 0 0 5px rgba(0, 242, 254, 0.4);">{{ username }}</strong> &nbsp;|&nbsp; <a href="/logout" class="logout-btn">Logout</a></div>
     </div>
     
     <div class="container">
         <h3>Live Telemetry</h3>
         <p><strong>System State:</strong> <span id="state" class="status-badge off">Loading...</span></p>
-        <h4 style="margin-top: 25px;">LCD Display Feedback:</h4>
+        <h4 style="margin-top: 30px;">LCD Display Feedback:</h4>
         <pre id="lcd">Connecting to hardware feed...</pre>
     </div>
 </body>
