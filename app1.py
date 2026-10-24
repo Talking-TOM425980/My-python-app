@@ -261,6 +261,126 @@ REGISTER_HTML = """
 </html>
 """
 
+SETUP_HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Plant System - Setup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            color: #ffffff;
+            overflow: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,255,136,0.12) 0%, rgba(0,242,254,0.04) 50%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .card { 
+            position: relative;
+            z-index: 1;
+            background: rgba(10, 26, 20, 0.85); 
+            backdrop-filter: blur(14px);
+            padding: 40px 30px; 
+            border-radius: 14px; 
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2), inset 0 0 15px rgba(0, 242, 254, 0.1); 
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            width: 380px; 
+            text-align: center; 
+        }
+        h2 { 
+            margin: 0 0 10px 0;
+            font-size: 24px; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            color: #00ff88; 
+            text-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+            font-weight: 700;
+        }
+        p.subtitle {
+            color: #8fa39b;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+        input { 
+            width: 100%; 
+            padding: 12px 16px; 
+            margin: 10px 0; 
+            background: rgba(4, 16, 12, 0.8);
+            border: 1px solid rgba(0, 242, 254, 0.3); 
+            border-radius: 8px; 
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 15px;
+            background: linear-gradient(90deg, #00ff88, #00b0ff); 
+            color: #04100c; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 15px;
+            font-weight: 700; 
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer; 
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            transition: all 0.3s ease;
+        }
+        button:hover { 
+            background: linear-gradient(90deg, #00f2fe, #00ff88); 
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+            transform: translateY(-1px);
+        }
+        .error-msg {
+            background-color: rgba(255, 0, 85, 0.15);
+            color: #ff3366;
+            border: 1px solid rgba(255, 51, 102, 0.4);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>System Configuration</h2>
+        <p class="subtitle">Please assign a designation to your automated water system.</p>
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
+        <form method="POST" action="/setup-system">
+            <input type="text" name="system_name" placeholder="e.g., Greenhouse Alpha" required><br>
+            <button type="submit">Initialize System</button>
+        </form>
+    </div>
+</body>
+</html>
+"""
+
 DASHBOARD_HTML = """
 <!DOCTYPE html>
 <html>
@@ -292,12 +412,15 @@ DASHBOARD_HTML = """
         }
         .header h2 {
             margin: 0;
-            font-size: 22px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            font-size: 18px;
+            text-transform: none;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .header h2 span {
             color: #00ff88;
             text-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
-            font-weight: 700;
         }
         .container { 
             background: rgba(10, 26, 20, 0.85); 
@@ -370,14 +493,26 @@ DASHBOARD_HTML = """
         }
     </style>
     <script>
+        const username = "{{ username }}";
+        const systemName = "{{ system_name }}";
+
         async function fetchStatus() {
             try {
                 let response = await fetch('/api/status');
                 let data = await response.json();
                 
                 let stateElem = document.getElementById('state');
+                let isConnected = data.state.toLowerCase() === 'on';
+                
                 stateElem.innerText = data.state;
-                stateElem.className = 'status-badge ' + (data.state.toLowerCase() === 'on' ? 'on' : 'off');
+                stateElem.className = 'status-badge ' + (isConnected ? 'on' : 'off');
+                
+                let headerTitle = document.getElementById('header-title');
+                if (isConnected) {
+                    headerTitle.innerHTML = `Hello ${username}, <span>${systemName}</span> has connected successfully!`;
+                } else {
+                    headerTitle.innerHTML = `Hello ${username}, <span>${systemName}</span> is awaiting for connection`;
+                }
                 
                 document.getElementById('lcd').innerText = data.lcd_text;
             } catch (err) {
@@ -390,8 +525,8 @@ DASHBOARD_HTML = """
 </head>
 <body>
     <div class="header">
-        <h2>Smart Plant System</h2>
-        <div>Eco-User: <strong style="color: #00f2fe; text-shadow: 0 0 5px rgba(0, 242, 254, 0.4);">{{ username }}</strong> &nbsp;|&nbsp; <a href="/logout" class="logout-btn">Logout</a></div>
+        <h2 id="header-title">Hello {{ username }}, <span>{{ system_name }}</span> is awaiting for connection</h2>
+        <div><a href="/logout" class="logout-btn">Logout</a></div>
     </div>
     
     <div class="container">
@@ -418,12 +553,16 @@ def init_db():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 1. Users Table
+        # Erase/Reset previous accounts by dropping and recreating or ensuring fresh schema
+        cursor.execute("DROP TABLE IF EXISTS users")
+
+        # 1. Users Table with water_system_name column
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
-                password_hash TEXT NOT NULL
+                password_hash TEXT NOT NULL,
+                water_system_name TEXT
             )
         ''')
 
@@ -443,7 +582,7 @@ def init_db():
 
         conn.commit()
         conn.close()
-        print(f"Database successfully initialized at {DB_PATH}")
+        print(f"Database successfully initialized and reset at {DB_PATH}")
     except Exception as e:
         print(f"Database Initialization Error: {e}")
 
@@ -451,7 +590,7 @@ def init_db():
 init_db()
 
 
-# --- Authentication Routes ---
+# --- Authentication & Setup Routes ---
 
 @app.route("/")
 def home():
@@ -473,8 +612,8 @@ def register():
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO users (username, password_hash) VALUES (?, ?)",
-                (username, generate_password_hash(password))
+                "INSERT INTO users (username, password_hash, water_system_name) VALUES (?, ?, ?)",
+                (username, generate_password_hash(password), None)
             )
             conn.commit()
             conn.close()
@@ -496,12 +635,14 @@ def login():
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT password_hash FROM users WHERE username = ?", (username,))
+            cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
             user = cursor.fetchone()
             conn.close()
 
             if user and check_password_hash(user["password_hash"], password):
                 session["user"] = username
+                if not user["water_system_name"]:
+                    return redirect(url_for("setup_system"))
                 return redirect(url_for("dashboard"))
 
             return render_template_string(LOGIN_HTML, error="Invalid Credentials")
@@ -509,6 +650,29 @@ def login():
             return render_template_string(LOGIN_HTML, error=f"Database Error: {e}")
 
     return render_template_string(LOGIN_HTML, error=None)
+
+
+@app.route("/setup-system", methods=["GET", "POST"])
+def setup_system():
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        system_name = request.form.get("system_name")
+        if not system_name:
+            return render_template_string(SETUP_HTML, error="Water system name is required")
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("UPDATE users SET water_system_name = ? WHERE username = ?", (system_name, session["user"]))
+            conn.commit()
+            conn.close()
+            return redirect(url_for("dashboard"))
+        except Exception as e:
+            return render_template_string(SETUP_HTML, error=f"Database Error: {e}")
+
+    return render_template_string(SETUP_HTML, error=None)
 
 
 @app.route("/logout")
@@ -521,7 +685,20 @@ def logout():
 def dashboard():
     if "user" not in session:
         return redirect(url_for("login"))
-    return render_template_string(DASHBOARD_HTML, username=session["user"])
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT water_system_name FROM users WHERE username = ?", (session["user"],))
+        user = cursor.fetchone()
+        conn.close()
+
+        if not user or not user["water_system_name"]:
+            return redirect(url_for("setup_system"))
+            
+        return render_template_string(DASHBOARD_HTML, username=session["user"], system_name=user["water_system_name"])
+    except Exception:
+        return redirect(url_for("setup_system"))
 
 
 # --- Real-Time API Routes ---
