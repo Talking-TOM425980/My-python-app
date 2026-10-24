@@ -1,3 +1,6 @@
+Here is the updated complete code. It removes any explicit mentions of "Vice City" while fully keeping the vibrant neon cyberpunk aesthetic, and adds inline error handling directly onto the login and registration screens.
+
+```python
 import os
 import sqlite3
 from flask import Flask, render_template_string, request, redirect, url_for, session, jsonify
@@ -31,7 +34,6 @@ LOGIN_HTML = """
             overflow: hidden;
             position: relative;
         }
-        /* Background Grid Overlay for GTA VI Vice Vibe */
         body::before {
             content: '';
             position: absolute;
@@ -107,6 +109,17 @@ LOGIN_HTML = """
             box-shadow: 0 0 20px #00f2fe;
             color: #000;
         }
+        .error-msg {
+            background-color: rgba(255, 0, 85, 0.2);
+            color: #ff0055;
+            border: 1px solid #ff0055;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 0 8px #ff0055;
+        }
         p { margin-top: 20px; font-size: 14px; color: #b3b3b3; }
         a { color: #00f2fe; text-decoration: none; font-weight: bold; text-shadow: 0 0 5px #00f2fe; }
         a:hover { color: #ff007f; text-shadow: 0 0 8px #ff007f; }
@@ -114,8 +127,11 @@ LOGIN_HTML = """
 </head>
 <body>
     <div class="card">
-        <h2>VICE CITY</h2>
-        <h3>Plant Monitor</h3>
+        <h2>Plant Net</h2>
+        <h3>Login</h3>
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
         <form method="POST" action="/login">
             <input type="text" name="username" placeholder="Username" required><br>
             <input type="password" name="password" placeholder="Password" required><br>
@@ -214,6 +230,17 @@ REGISTER_HTML = """
             box-shadow: 0 0 20px #ff007f;
             color: #fff;
         }
+        .error-msg {
+            background-color: rgba(255, 0, 85, 0.2);
+            color: #ff0055;
+            border: 1px solid #ff0055;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 0 8px #ff0055;
+        }
         p { margin-top: 20px; font-size: 14px; color: #b3b3b3; }
         a { color: #ff007f; text-decoration: none; font-weight: bold; text-shadow: 0 0 5px #ff007f; }
         a:hover { color: #00f2fe; text-shadow: 0 0 8px #00f2fe; }
@@ -221,7 +248,10 @@ REGISTER_HTML = """
 </head>
 <body>
     <div class="card">
-        <h2>Join Vice Network</h2>
+        <h2>Create Account</h2>
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
         <form method="POST" action="/register">
             <input type="text" name="username" placeholder="Username" required><br>
             <input type="password" name="password" placeholder="Password" required><br>
@@ -424,7 +454,7 @@ init_db()
 def home():
     if "user" in session:
         return redirect(url_for("dashboard"))
-    return render_template_string(LOGIN_HTML)
+    return render_template_string(LOGIN_HTML, error=None)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -434,7 +464,7 @@ def register():
         password = request.form.get("password")
 
         if not username or not password:
-            return "Missing username or password", 400
+            return render_template_string(REGISTER_HTML, error="Missing username or password")
 
         try:
             conn = get_db_connection()
@@ -447,11 +477,11 @@ def register():
             conn.close()
             return redirect(url_for("login"))
         except sqlite3.IntegrityError:
-            return "Username already exists!", 400
+            return render_template_string(REGISTER_HTML, error="Username already exists!")
         except Exception as e:
-            return f"Database Error: {e}", 500
+            return render_template_string(REGISTER_HTML, error=f"Database Error: {e}")
 
-    return render_template_string(REGISTER_HTML)
+    return render_template_string(REGISTER_HTML, error=None)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -471,11 +501,11 @@ def login():
                 session["user"] = username
                 return redirect(url_for("dashboard"))
 
-            return "Invalid Credentials", 401
+            return render_template_string(LOGIN_HTML, error="Invalid Credentials")
         except Exception as e:
-            return f"Database Error: {e}", 500
+            return render_template_string(LOGIN_HTML, error=f"Database Error: {e}")
 
-    return render_template_string(LOGIN_HTML)
+    return render_template_string(LOGIN_HTML, error=None)
 
 
 @app.route("/logout")
@@ -547,3 +577,5 @@ if __name__ == "__main__":
     # Render assigns dynamic port numbers via os.environ
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
+
+```
