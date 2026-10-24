@@ -18,24 +18,110 @@ LOGIN_HTML = """
     <title>Smart Plant System - Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; text-align: center; }
-        input { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; }
-        button { width: 95%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        button:hover { background-color: #218838; }
-        a { color: #007bff; text-decoration: none; }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Trebuchet MS', 'Impact', sans-serif; 
+            background: linear-gradient(135deg, #0f051d 0%, #2e114d 50%, #03001e 100%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            color: #ffffff;
+            overflow: hidden;
+            position: relative;
+        }
+        /* Background Grid Overlay for GTA VI Vice Vibe */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,0,127,0.15) 0%, rgba(0,242,254,0.05) 50%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .card { 
+            position: relative;
+            z-index: 1;
+            background: rgba(18, 10, 36, 0.85); 
+            backdrop-filter: blur(12px);
+            padding: 40px 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 0 25px rgba(255, 0, 127, 0.35), inset 0 0 15px rgba(0, 242, 254, 0.15); 
+            border: 2px solid #ff007f;
+            width: 340px; 
+            text-align: center; 
+        }
+        h2 { 
+            margin: 0;
+            font-size: 32px; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            color: #ff007f; 
+            text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f; 
+            font-style: italic;
+        }
+        h3 { 
+            margin: 5px 0 20px 0;
+            font-size: 18px; 
+            color: #00f2fe; 
+            letter-spacing: 3px; 
+            text-transform: uppercase;
+            text-shadow: 0 0 8px #00f2fe;
+        }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #00f2fe; 
+            border-radius: 6px; 
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: #ff007f;
+            box-shadow: 0 0 10px #ff007f;
+        }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 15px;
+            background: linear-gradient(90deg, #ff007f, #7928ca); 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            font-size: 16px;
+            font-weight: bold; 
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer; 
+            box-shadow: 0 0 12px rgba(255, 0, 127, 0.5);
+            transition: all 0.3s ease;
+        }
+        button:hover { 
+            background: linear-gradient(90deg, #00f2fe, #4facfe); 
+            box-shadow: 0 0 20px #00f2fe;
+            color: #000;
+        }
+        p { margin-top: 20px; font-size: 14px; color: #b3b3b3; }
+        a { color: #00f2fe; text-decoration: none; font-weight: bold; text-shadow: 0 0 5px #00f2fe; }
+        a:hover { color: #ff007f; text-shadow: 0 0 8px #ff007f; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2>Plant Monitor</h2>
-        <h3>Login</h3>
+        <h2>VICE CITY</h2>
+        <h3>Plant Monitor</h3>
         <form method="POST" action="/login">
             <input type="text" name="username" placeholder="Username" required><br>
             <input type="password" name="password" placeholder="Password" required><br>
             <button type="submit">Sign In</button>
         </form>
-        <p style="margin-top: 15px;">Don't have an account? <a href="/register">Register</a></p>
+        <p>Don't have an account? <a href="/register">Register</a></p>
     </div>
 </body>
 </html>
@@ -48,23 +134,100 @@ REGISTER_HTML = """
     <title>Smart Plant System - Register</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; text-align: center; }
-        input { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; }
-        button { width: 95%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        button:hover { background-color: #0069d9; }
-        a { color: #28a745; text-decoration: none; }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Trebuchet MS', 'Impact', sans-serif; 
+            background: linear-gradient(135deg, #0f051d 0%, #2e114d 50%, #03001e 100%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            color: #ffffff;
+            overflow: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,242,254,0.15) 0%, rgba(255,0,127,0.05) 50%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .card { 
+            position: relative;
+            z-index: 1;
+            background: rgba(18, 10, 36, 0.85); 
+            backdrop-filter: blur(12px);
+            padding: 40px 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.35), inset 0 0 15px rgba(255, 0, 127, 0.15); 
+            border: 2px solid #00f2fe;
+            width: 340px; 
+            text-align: center; 
+        }
+        h2 { 
+            margin: 0 0 20px 0;
+            font-size: 28px; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            color: #00f2fe; 
+            text-shadow: 0 0 10px #00f2fe, 0 0 20px #00f2fe; 
+            font-style: italic;
+        }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #ff007f; 
+            border-radius: 6px; 
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: #00f2fe;
+            box-shadow: 0 0 10px #00f2fe;
+        }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 15px;
+            background: linear-gradient(90deg, #00f2fe, #4facfe); 
+            color: #000; 
+            border: none; 
+            border-radius: 6px; 
+            font-size: 16px;
+            font-weight: bold; 
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer; 
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.5);
+            transition: all 0.3s ease;
+        }
+        button:hover { 
+            background: linear-gradient(90deg, #ff007f, #7928ca); 
+            box-shadow: 0 0 20px #ff007f;
+            color: #fff;
+        }
+        p { margin-top: 20px; font-size: 14px; color: #b3b3b3; }
+        a { color: #ff007f; text-decoration: none; font-weight: bold; text-shadow: 0 0 5px #ff007f; }
+        a:hover { color: #00f2fe; text-shadow: 0 0 8px #00f2fe; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2>Create Account</h2>
+        <h2>Join Vice Network</h2>
         <form method="POST" action="/register">
             <input type="text" name="username" placeholder="Username" required><br>
             <input type="password" name="password" placeholder="Password" required><br>
             <button type="submit">Register</button>
         </form>
-        <p style="margin-top: 15px;">Already registered? <a href="/login">Login here</a></p>
+        <p>Already registered? <a href="/login">Login here</a></p>
     </div>
 </body>
 </html>
@@ -77,14 +240,101 @@ DASHBOARD_HTML = """
     <title>Smart Plant Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #eef2f5; margin: 0; padding: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .container { background: white; padding: 25px; border-radius: 8px; margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-weight: bold; text-transform: uppercase; }
-        .on { background-color: #d4edda; color: #155724; }
-        .off { background-color: #f8d7da; color: #721c24; }
-        pre { background: #1e1e1e; color: #00ff66; padding: 20px; border-radius: 6px; font-family: monospace; font-size: 16px; white-space: pre-wrap; word-wrap: break-word; }
-        .logout-btn { color: #dc3545; text-decoration: none; font-weight: bold; }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #0b0217 0%, #1d0936 50%, #03001e 100%); 
+            min-height: 100vh;
+            margin: 0; 
+            padding: 20px; 
+            color: #ffffff;
+        }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: rgba(18, 10, 36, 0.85); 
+            backdrop-filter: blur(10px);
+            padding: 20px 25px; 
+            border-radius: 12px; 
+            border: 1px solid #ff007f;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.25); 
+        }
+        .header h2 {
+            margin: 0;
+            font-size: 26px;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #ff007f;
+            text-shadow: 0 0 8px #ff007f;
+        }
+        .container { 
+            background: rgba(18, 10, 36, 0.85); 
+            backdrop-filter: blur(10px);
+            padding: 30px; 
+            border-radius: 12px; 
+            margin-top: 25px; 
+            border: 1px solid #00f2fe;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2); 
+        }
+        h3, h4 {
+            color: #00f2fe;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 6px #00f2fe;
+            margin-top: 0;
+        }
+        .status-badge { 
+            display: inline-block; 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+        .on { 
+            background-color: rgba(0, 255, 128, 0.2); 
+            color: #00ff80; 
+            border: 1px solid #00ff80;
+            box-shadow: 0 0 10px #00ff80;
+        }
+        .off { 
+            background-color: rgba(255, 0, 85, 0.2); 
+            color: #ff0055; 
+            border: 1px solid #ff0055;
+            box-shadow: 0 0 10px #ff0055;
+        }
+        pre { 
+            background: #05020a; 
+            color: #ff007f; 
+            padding: 20px; 
+            border-radius: 8px; 
+            border: 1px solid #ff007f;
+            box-shadow: inset 0 0 15px rgba(255, 0, 127, 0.3);
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 16px; 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            text-shadow: 0 0 5px #ff007f;
+        }
+        .logout-btn { 
+            color: #ff0055; 
+            text-decoration: none; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid #ff0055;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background: #ff0055;
+            color: #fff;
+            box-shadow: 0 0 10px #ff0055;
+        }
     </style>
     <script>
         async function fetchStatus() {
@@ -108,13 +358,13 @@ DASHBOARD_HTML = """
 <body>
     <div class="header">
         <h2>Smart Plant System</h2>
-        <div>Welcome, <strong>{{ username }}</strong> | <a href="/logout" class="logout-btn">Logout</a></div>
+        <div>Welcome, <strong style="color: #00f2fe; text-shadow: 0 0 5px #00f2fe;">{{ username }}</strong> | <a href="/logout" class="logout-btn">Logout</a></div>
     </div>
     
     <div class="container">
         <h3>Live Telemetry</h3>
         <p><strong>System State:</strong> <span id="state" class="status-badge off">Loading...</span></p>
-        <h4>LCD Display Feedback:</h4>
+        <h4 style="margin-top: 25px;">LCD Display Feedback:</h4>
         <pre id="lcd">Connecting to hardware feed...</pre>
     </div>
 </body>
