@@ -15,129 +15,224 @@ WELCOME_HTML = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Smart Plant System - Welcome</title>
+    <title>Smart Plant - Automated Ecosystem</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
             margin: 0; 
+            min-height: 100vh;
             color: #ffffff;
-            overflow-x: hidden;
-            position: relative;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
-        body::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0,255,136,0.12) 0%, rgba(0,242,254,0.04) 50%, transparent 70%);
-            z-index: 0;
-            pointer-events: none;
+        /* Top Navigation Bar modeled after Render */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(10, 26, 20, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 136, 0.15);
         }
-        .hero-card { 
-            position: relative;
-            z-index: 1;
-            background: rgba(10, 26, 20, 0.85); 
-            backdrop-filter: blur(14px);
-            padding: 50px 40px; 
-            border-radius: 16px; 
-            box-shadow: 0 0 40px rgba(0, 255, 136, 0.2), inset 0 0 20px rgba(0, 242, 254, 0.1); 
-            border: 1px solid rgba(0, 255, 136, 0.4);
-            width: 100%;
-            max-width: 550px; 
-            text-align: center; 
-        }
-        h1 { 
-            margin: 0 0 10px 0;
-            font-size: 36px; 
-            text-transform: uppercase; 
-            letter-spacing: 3px;
-            color: #00ff88; 
-            text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        .logo {
+            font-size: 20px;
             font-weight: 800;
-        }
-        h3 { 
-            margin: 0 0 25px 0;
-            font-size: 13px; 
-            color: #00f2fe; 
-            letter-spacing: 4px; 
             text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
-            font-weight: 600;
+            letter-spacing: 2px;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .intro-text {
-            color: #b0c4bc;
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            text-align: left;
-            background: rgba(4, 16, 12, 0.6);
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 242, 254, 0.2);
-        }
-        .btn-group {
+        .logo span { color: #00f2fe; }
+        .nav-auth {
             display: flex;
             gap: 15px;
-            margin-top: 10px;
+            align-items: center;
         }
-        .btn { 
-            flex: 1;
-            padding: 14px; 
-            border-radius: 8px; 
+        .nav-login {
+            color: #ffffff;
+            text-decoration: none;
             font-size: 14px;
-            font-weight: 700; 
+            font-weight: 600;
+            padding: 8px 16px;
+            transition: color 0.2s;
+        }
+        .nav-login:hover {
+            color: #00ff88;
+        }
+        .nav-signup {
+            background: #ffffff;
+            color: #04100c;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 9px 18px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 15px rgba(255, 255, 136, 0.2);
+        }
+        .nav-signup:hover {
+            background: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+
+        /* Hero Section Structure */
+        .hero-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 50px;
+            width: 100%;
+            gap: 50px;
+        }
+        .hero-content {
+            flex: 1;
+            max-width: 600px;
+        }
+        h1 {
+            font-size: 52px;
+            line-height: 1.1;
+            margin: 0 0 20px 0;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: #ffffff;
+        }
+        h1 span {
+            background: linear-gradient(90deg, #00ff88, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+        }
+        .hero-desc {
+            font-size: 17px;
+            line-height: 1.6;
+            color: #9fb3ab;
+            margin-bottom: 35px;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #00ff88, #00b0ff);
+            color: #04100c;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #00f2fe, #00ff88);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        /* Interactive Live Preview Visual Card on the Right */
+        .hero-visual {
+            flex: 1;
+            background: rgba(10, 26, 20, 0.85);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+        }
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0,242,254,0.2);
+            padding-bottom: 15px;
+        }
+        .preview-title {
+            font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            cursor: pointer; 
-            text-decoration: none;
-            transition: all 0.3s ease;
+            color: #00f2fe;
+            font-weight: 700;
+        }
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff88;
             display: inline-block;
         }
-        .btn-login {
-            background: linear-gradient(90deg, #00ff88, #00b0ff); 
-            color: #04100c; 
-            border: none;
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        .preview-box {
+            background: #020705;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            color: #00ff88;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            line-height: 1.5;
         }
-        .btn-login:hover { 
-            background: linear-gradient(90deg, #00f2fe, #00ff88); 
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
-            transform: translateY(-2px);
-        }
-        .btn-signup {
-            background: transparent;
-            color: #00f2fe;
-            border: 1px solid rgba(0, 242, 254, 0.5);
-            box-shadow: inset 0 0 10px rgba(0, 242, 254, 0.1);
-        }
-        .btn-signup:hover {
-            background: rgba(0, 242, 254, 0.1);
-            border-color: #00f2fe;
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
-            transform: translateY(-2px);
+
+        @media(max-width: 900px) {
+            .hero-container { flex-direction: column; padding: 30px 20px; text-align: center; }
+            .hero-content { max-width: 100%; }
+            .hero-buttons { justify-content: center; }
+            nav { padding: 15px 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="hero-card">
-        <h1>Smart Plant</h1>
-        <h3>Automated Ecosystem</h3>
-        
-        <div class="intro-text">
-            Welcome to the remote monitoring hub for your smart greenhouse hardware. This web application pairs with your automated system to <strong>water your plants intelligently based on live humidity sensors</strong>. Monitor real-time status, hardware feedback, and LCD telemetry directly from your device anywhere you go.
+    <!-- Top Navigation Bar -->
+    <nav>
+        <a href="/" class="logo">🌿 Smart <span>Plant</span></a>
+        <div class="nav-auth">
+            <a href="/login" class="nav-login">Login</a>
+            <a href="/register" class="nav-signup">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Main Hero Landing Structure -->
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1>Automated care for your <span>plants & systems</span></h1>
+            <p class="hero-desc">
+                Smart Plant intelligently waters your greenery based on live humidity sensor thresholds. 
+                This companion web application links directly with your hardware setup so you can monitor real-time 
+                system statuses, sensor telemetry, and friendly LCD feedback feeds directly from your mobile device or desktop anywhere you go.
+            </p>
+            <div class="hero-buttons">
+                <a href="/register" class="btn-primary">Get Started</a>
+                <a href="/login" class="nav-login" style="padding: 14px 20px; border: 1px solid rgba(0,242,254,0.3); border-radius: 8px;">Sign In &rarr;</a>
+            </div>
         </div>
 
-        <div class="btn-group">
-            <a href="/login" class="btn btn-login">Login</a>
-            <a href="/register" class="btn btn-signup">Sign Up</a>
+        <!-- Live Status Display Preview Graphic -->
+        <div class="hero-visual">
+            <div class="preview-header">
+                <span class="preview-title">Live Hardware Telemetry Feed</span>
+                <span><span class="live-dot"></span> LIVE</span>
+            </div>
+            <div class="preview-box">
+                [SYSTEM STATUS]: ACTIVE<br>
+                [SENSOR]: HUMIDITY OPTIMAL (68%)<br>
+                [LCD FEED]:<br>
+                > Greenhouses Online<br>
+                > Watering valve closed.<br>
+                > Soil moisture stable.
+            </div>
         </div>
     </div>
 </body>
@@ -268,7 +363,7 @@ LOGIN_HTML = """
             <input type="password" name="password" placeholder="Password" required><br>
             <button type="submit">Sign In</button>
         </form>
-        <p>New ecosystem account? <a href="/register">Register</a></p>
+        <p>New ecosystem account? <a href="/register">Register</a> | <a href="/">Home</a></p>
     </div>
 </body>
 </html>
@@ -388,7 +483,7 @@ REGISTER_HTML = """
             <input type="password" name="password" placeholder="Password" required><br>
             <button type="submit">Register</button>
         </form>
-        <p>Already registered? <a href="/login">Login here</a></p>
+        <p>Already registered? <a href="/login">Login here</a> | <a href="/">Home</a></p>
     </div>
 </body>
 </html>
@@ -707,7 +802,6 @@ def init_db():
 
         conn.commit()
         conn.close()
-        print(f"Database successfully initialized at {DB_PATH}")
     except Exception as e:
         print(f"Database Initialization Error: {e}")
 
@@ -837,7 +931,6 @@ def dashboard():
 
 @app.route("/api/status", methods=["GET"])
 def get_status():
-    """Endpoint for frontend dashboard live updates."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -854,7 +947,6 @@ def get_status():
 
 @app.route("/api/device", methods=["POST"])
 def control_device():
-    """Endpoint receiving hardware telemetry from Raspberry Pi (humidity3.py)."""
     data = request.get_json(silent=True) or {}
     new_state = data.get("action")
     new_lcd = data.get("lcd_text")
@@ -868,7 +960,7 @@ def control_device():
         elif new_state:
             cursor.execute("UPDATE telemetry SET device_state = ? WHERE id = 1", (new_state,))
         elif new_lcd:
-            cursor.execute("UPDATE telemetry SET device_state = ?, lcd_text = ? WHERE id = 1", (new_lcd,)) # handled appropriately
+            cursor.execute("UPDATE telemetry SET lcd_text = ? WHERE id = 1", (new_lcd,))
 
         conn.commit()
 
