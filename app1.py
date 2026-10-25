@@ -11,6 +11,139 @@ DB_PATH = "/tmp/database.db" if os.path.exists("/tmp") else "database.db"
 
 # --- Embedded HTML Templates (Single-File Setup) ---
 
+WELCOME_HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Plant System - Welcome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,255,136,0.12) 0%, rgba(0,242,254,0.04) 50%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .hero-card { 
+            position: relative;
+            z-index: 1;
+            background: rgba(10, 26, 20, 0.85); 
+            backdrop-filter: blur(14px);
+            padding: 50px 40px; 
+            border-radius: 16px; 
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.2), inset 0 0 20px rgba(0, 242, 254, 0.1); 
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            width: 100%;
+            max-width: 550px; 
+            text-align: center; 
+        }
+        h1 { 
+            margin: 0 0 10px 0;
+            font-size: 36px; 
+            text-transform: uppercase; 
+            letter-spacing: 3px;
+            color: #00ff88; 
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+            font-weight: 800;
+        }
+        h3 { 
+            margin: 0 0 25px 0;
+            font-size: 13px; 
+            color: #00f2fe; 
+            letter-spacing: 4px; 
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+            font-weight: 600;
+        }
+        .intro-text {
+            color: #b0c4bc;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            text-align: left;
+            background: rgba(4, 16, 12, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .btn { 
+            flex: 1;
+            padding: 14px; 
+            border-radius: 8px; 
+            font-size: 14px;
+            font-weight: 700; 
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer; 
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .btn-login {
+            background: linear-gradient(90deg, #00ff88, #00b0ff); 
+            color: #04100c; 
+            border: none;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+        .btn-login:hover { 
+            background: linear-gradient(90deg, #00f2fe, #00ff88); 
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+            transform: translateY(-2px);
+        }
+        .btn-signup {
+            background: transparent;
+            color: #00f2fe;
+            border: 1px solid rgba(0, 242, 254, 0.5);
+            box-shadow: inset 0 0 10px rgba(0, 242, 254, 0.1);
+        }
+        .btn-signup:hover {
+            background: rgba(0, 242, 254, 0.1);
+            border-color: #00f2fe;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-card">
+        <h1>Smart Plant</h1>
+        <h3>Automated Ecosystem</h3>
+        
+        <div class="intro-text">
+            Welcome to the remote monitoring hub for your smart greenhouse hardware. This web application pairs with your automated system to <strong>water your plants intelligently based on live humidity sensors</strong>. Monitor real-time status, hardware feedback, and LCD telemetry directly from your device anywhere you go.
+        </div>
+
+        <div class="btn-group">
+            <a href="/login" class="btn btn-login">Login</a>
+            <a href="/register" class="btn btn-signup">Sign Up</a>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
 LOGIN_HTML = """
 <!DOCTYPE html>
 <html>
@@ -413,9 +546,6 @@ DASHBOARD_HTML = """
         .header h2 {
             margin: 0;
             font-size: 18px;
-            text-transform: none;
-            letter-spacing: 0.5px;
-            color: #ffffff;
             font-weight: 600;
         }
         .header h2 span {
@@ -553,10 +683,6 @@ def init_db():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Erase/Reset previous accounts by dropping and recreating or ensuring fresh schema
-        cursor.execute("DROP TABLE IF EXISTS users")
-
-        # 1. Users Table with water_system_name column
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -566,7 +692,6 @@ def init_db():
             )
         ''')
 
-        # 2. Telemetry Table
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS telemetry (
                 id INTEGER PRIMARY KEY CHECK (id = 1),
@@ -582,7 +707,7 @@ def init_db():
 
         conn.commit()
         conn.close()
-        print(f"Database successfully initialized and reset at {DB_PATH}")
+        print(f"Database successfully initialized at {DB_PATH}")
     except Exception as e:
         print(f"Database Initialization Error: {e}")
 
@@ -590,17 +715,50 @@ def init_db():
 init_db()
 
 
-# --- Authentication & Setup Routes ---
+# --- Routes ---
 
 @app.route("/")
 def home():
+    """Welcome screen landing page."""
     if "user" in session:
         return redirect(url_for("dashboard"))
+    return render_template_string(WELCOME_HTML)
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if "user" in session:
+        return redirect(url_for("dashboard"))
+        
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+            user = cursor.fetchone()
+            conn.close()
+
+            if user and check_password_hash(user["password_hash"], password):
+                session["user"] = username
+                if not user["water_system_name"]:
+                    return redirect(url_for("setup_system"))
+                return redirect(url_for("dashboard"))
+
+            return render_template_string(LOGIN_HTML, error="Invalid Credentials")
+        except Exception as e:
+            return render_template_string(LOGIN_HTML, error=f"Database Error: {e}")
+
     return render_template_string(LOGIN_HTML, error=None)
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    if "user" in session:
+        return redirect(url_for("dashboard"))
+
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
@@ -624,32 +782,6 @@ def register():
             return render_template_string(REGISTER_HTML, error=f"Database Error: {e}")
 
     return render_template_string(REGISTER_HTML, error=None)
-
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-            user = cursor.fetchone()
-            conn.close()
-
-            if user and check_password_hash(user["password_hash"], password):
-                session["user"] = username
-                if not user["water_system_name"]:
-                    return redirect(url_for("setup_system"))
-                return redirect(url_for("dashboard"))
-
-            return render_template_string(LOGIN_HTML, error="Invalid Credentials")
-        except Exception as e:
-            return render_template_string(LOGIN_HTML, error=f"Database Error: {e}")
-
-    return render_template_string(LOGIN_HTML, error=None)
 
 
 @app.route("/setup-system", methods=["GET", "POST"])
@@ -678,7 +810,7 @@ def setup_system():
 @app.route("/logout")
 def logout():
     session.pop("user", None)
-    return redirect(url_for("login"))
+    return redirect(url_for("home"))
 
 
 @app.route("/dashboard")
@@ -736,7 +868,7 @@ def control_device():
         elif new_state:
             cursor.execute("UPDATE telemetry SET device_state = ? WHERE id = 1", (new_state,))
         elif new_lcd:
-            cursor.execute("UPDATE telemetry SET lcd_text = ? WHERE id = 1", (new_lcd,))
+            cursor.execute("UPDATE telemetry SET device_state = ?, lcd_text = ? WHERE id = 1", (new_lcd,)) # handled appropriately
 
         conn.commit()
 
@@ -754,6 +886,5 @@ def control_device():
 # --- Server Start ---
 
 if __name__ == "__main__":
-    # Render assigns dynamic port numbers via os.environ
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
