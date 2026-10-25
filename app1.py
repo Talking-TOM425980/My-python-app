@@ -9,7 +9,7 @@ app.secret_key = os.urandom(24)
 # Use /tmp directory on Render to avoid read-only filesystem issues
 DB_PATH = "/tmp/database.db" if os.path.exists("/tmp") else "database.db"
 
-# --- Embedded HTML Templates (Single-File Setup) ---
+# --- Embedded HTML Templates ---
 
 WELCOME_HTML = """
 <!DOCTYPE html>
@@ -28,7 +28,6 @@ WELCOME_HTML = """
             display: flex;
             flex-direction: column;
         }
-        /* Top Navigation Bar modeled after Render */
         nav {
             display: flex;
             justify-content: space-between;
@@ -64,9 +63,7 @@ WELCOME_HTML = """
             padding: 8px 16px;
             transition: color 0.2s;
         }
-        .nav-login:hover {
-            color: #00ff88;
-        }
+        .nav-login:hover { color: #00ff88; }
         .nav-signup {
             background: #ffffff;
             color: #04100c;
@@ -82,8 +79,6 @@ WELCOME_HTML = """
             background: #00ff88;
             box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
         }
-
-        /* Hero Section Structure */
         .hero-container {
             flex: 1;
             display: flex;
@@ -95,10 +90,7 @@ WELCOME_HTML = """
             width: 100%;
             gap: 50px;
         }
-        .hero-content {
-            flex: 1;
-            max-width: 600px;
-        }
+        .hero-content { flex: 1; max-width: 600px; }
         h1 {
             font-size: 52px;
             line-height: 1.1;
@@ -111,7 +103,6 @@ WELCOME_HTML = """
             background: linear-gradient(90deg, #00ff88, #00f2fe);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: none;
         }
         .hero-desc {
             font-size: 17px;
@@ -119,10 +110,7 @@ WELCOME_HTML = """
             color: #9fb3ab;
             margin-bottom: 35px;
         }
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-        }
+        .hero-buttons { display: flex; gap: 15px; }
         .btn-primary {
             background: linear-gradient(90deg, #00ff88, #00b0ff);
             color: #04100c;
@@ -141,8 +129,6 @@ WELCOME_HTML = """
             box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
             transform: translateY(-2px);
         }
-        
-        /* Interactive Live Preview Visual Card on the Right */
         .hero-visual {
             flex: 1;
             background: rgba(10, 26, 20, 0.85);
@@ -185,7 +171,6 @@ WELCOME_HTML = """
             font-size: 14px;
             line-height: 1.5;
         }
-
         @media(max-width: 900px) {
             .hero-container { flex-direction: column; padding: 30px 20px; text-align: center; }
             .hero-content { max-width: 100%; }
@@ -195,7 +180,6 @@ WELCOME_HTML = """
     </style>
 </head>
 <body>
-    <!-- Top Navigation Bar -->
     <nav>
         <a href="/" class="logo">🌿 Smart <span>Plant</span></a>
         <div class="nav-auth">
@@ -203,23 +187,19 @@ WELCOME_HTML = """
             <a href="/register" class="nav-signup">Sign Up</a>
         </div>
     </nav>
-
-    <!-- Main Hero Landing Structure -->
     <div class="hero-container">
         <div class="hero-content">
             <h1>Automated care for your <span>plants & systems</span></h1>
             <p class="hero-desc">
                 Smart Plant intelligently waters your greenery based on live humidity sensor thresholds. 
                 This companion web application links directly with your hardware setup so you can monitor real-time 
-                system statuses, sensor telemetry, and friendly LCD feedback feeds directly from your mobile device or desktop anywhere you go.
+                system statuses, sensor telemetry, and friendly LCD feedback feeds directly from your mobile device or desktop.
             </p>
             <div class="hero-buttons">
                 <a href="/register" class="btn-primary">Get Started</a>
                 <a href="/login" class="nav-login" style="padding: 14px 20px; border: 1px solid rgba(0,242,254,0.3); border-radius: 8px;">Sign In &rarr;</a>
             </div>
         </div>
-
-        <!-- Live Status Display Preview Graphic -->
         <div class="hero-visual">
             <div class="preview-header">
                 <span class="preview-title">Live Hardware Telemetry Feed</span>
@@ -256,108 +236,41 @@ LOGIN_HTML = """
             height: 100vh; 
             margin: 0; 
             color: #ffffff;
-            overflow: hidden;
             position: relative;
-        }
-        body::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0,255,136,0.12) 0%, rgba(0,242,254,0.04) 50%, transparent 70%);
-            z-index: 0;
-            pointer-events: none;
         }
         .card { 
-            position: relative;
-            z-index: 1;
             background: rgba(10, 26, 20, 0.85); 
             backdrop-filter: blur(14px);
             padding: 40px 30px; 
             border-radius: 14px; 
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2), inset 0 0 15px rgba(0, 242, 254, 0.1); 
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2); 
             border: 1px solid rgba(0, 255, 136, 0.4);
             width: 350px; 
             text-align: center; 
         }
-        h2 { 
-            margin: 0;
-            font-size: 28px; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-            color: #00ff88; 
-            text-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
-            font-weight: 700;
-        }
-        h3 { 
-            margin: 5px 0 25px 0;
-            font-size: 14px; 
-            color: #00f2fe; 
-            letter-spacing: 3px; 
-            text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
-            font-weight: 500;
-        }
+        h2 { margin: 0; font-size: 28px; text-transform: uppercase; color: #00ff88; }
+        h3 { margin: 5px 0 25px 0; font-size: 14px; color: #00f2fe; text-transform: uppercase; }
         input { 
-            width: 100%; 
-            padding: 12px 16px; 
-            margin: 10px 0; 
-            background: rgba(4, 16, 12, 0.8);
-            border: 1px solid rgba(0, 242, 254, 0.3); 
-            border-radius: 8px; 
-            color: #ffffff;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-        input:focus {
-            border-color: #00ff88;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+            width: 100%; padding: 12px; margin: 10px 0; 
+            background: rgba(4, 16, 12, 0.8); border: 1px solid rgba(0, 242, 254, 0.3); 
+            border-radius: 8px; color: #ffffff; outline: none; 
         }
         button { 
-            width: 100%; 
-            padding: 12px; 
-            margin-top: 15px;
-            background: linear-gradient(90deg, #00ff88, #00b0ff); 
-            color: #04100c; 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 15px;
-            font-weight: 700; 
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
+            width: 100%; padding: 12px; margin-top: 15px; 
+            background: linear-gradient(90deg, #00ff88, #00b0ff); color: #04100c; 
+            border: none; border-radius: 8px; font-weight: 700; text-transform: uppercase; 
             cursor: pointer; 
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
-            transition: all 0.3s ease;
         }
-        button:hover { 
-            background: linear-gradient(90deg, #00f2fe, #00ff88); 
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
-            transform: translateY(-1px);
-        }
-        .error-msg {
-            background-color: rgba(255, 0, 85, 0.15);
-            color: #ff3366;
-            border: 1px solid rgba(255, 51, 102, 0.4);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            font-weight: 600;
-            box-shadow: 0 0 8px rgba(255, 51, 102, 0.2);
-        }
+        .error-msg { background: rgba(255, 0, 85, 0.15); color: #ff3366; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
         p { margin-top: 25px; font-size: 13px; color: #8fa39b; }
-        a { color: #00f2fe; text-decoration: none; font-weight: 600; transition: color 0.2s; }
-        a:hover { color: #00ff88; text-shadow: 0 0 6px rgba(0, 255, 136, 0.4); }
+        a { color: #00f2fe; text-decoration: none; font-weight: 600; }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>Plant Net</h2>
         <h3>Secure Access</h3>
-        {% if error %}
-            <div class="error-msg">{{ error }}</div>
-        {% endif %}
+        {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
         <form method="POST" action="/login">
             <input type="text" name="username" placeholder="Username" required><br>
             <input type="password" name="password" placeholder="Password" required><br>
@@ -380,104 +293,31 @@ REGISTER_HTML = """
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            color: #ffffff;
-            overflow: hidden;
-            position: relative;
-        }
-        body::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0,242,254,0.12) 0%, rgba(0,255,136,0.04) 50%, transparent 70%);
-            z-index: 0;
-            pointer-events: none;
+            display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #ffffff; 
         }
         .card { 
-            position: relative;
-            z-index: 1;
-            background: rgba(10, 26, 20, 0.85); 
-            backdrop-filter: blur(14px);
-            padding: 40px 30px; 
-            border-radius: 14px; 
-            box-shadow: 0 0 30px rgba(0, 242, 254, 0.2), inset 0 0 15px rgba(0, 255, 136, 0.1); 
-            border: 1px solid rgba(0, 242, 254, 0.4);
-            width: 350px; 
-            text-align: center; 
+            background: rgba(10, 26, 20, 0.85); backdrop-filter: blur(14px); 
+            padding: 40px 30px; border-radius: 14px; box-shadow: 0 0 30px rgba(0, 242, 254, 0.2); 
+            border: 1px solid rgba(0, 242, 254, 0.4); width: 350px; text-align: center; 
         }
-        h2 { 
-            margin: 0 0 25px 0;
-            font-size: 26px; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-            color: #00f2fe; 
-            text-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
-            font-weight: 700;
-        }
+        h2 { margin: 0 0 25px 0; font-size: 26px; text-transform: uppercase; color: #00f2fe; }
         input { 
-            width: 100%; 
-            padding: 12px 16px; 
-            margin: 10px 0; 
-            background: rgba(4, 16, 12, 0.8);
-            border: 1px solid rgba(0, 255, 136, 0.3); 
-            border-radius: 8px; 
-            color: #ffffff;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-        input:focus {
-            border-color: #00f2fe;
-            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+            width: 100%; padding: 12px; margin: 10px 0; background: rgba(4, 16, 12, 0.8); 
+            border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 8px; color: #ffffff; outline: none; 
         }
         button { 
-            width: 100%; 
-            padding: 12px; 
-            margin-top: 15px;
-            background: linear-gradient(90deg, #00f2fe, #00ff88); 
-            color: #04100c; 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 15px;
-            font-weight: 700; 
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            cursor: pointer; 
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
-            transition: all 0.3s ease;
+            width: 100%; padding: 12px; margin-top: 15px; background: linear-gradient(90deg, #00f2fe, #00ff88); 
+            color: #04100c; border: none; border-radius: 8px; font-weight: 700; text-transform: uppercase; cursor: pointer; 
         }
-        button:hover { 
-            background: linear-gradient(90deg, #00ff88, #00f2fe); 
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-            transform: translateY(-1px);
-        }
-        .error-msg {
-            background-color: rgba(255, 0, 85, 0.15);
-            color: #ff3366;
-            border: 1px solid rgba(255, 51, 102, 0.4);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            font-weight: 600;
-            box-shadow: 0 0 8px rgba(255, 51, 102, 0.2);
-        }
+        .error-msg { background: rgba(255, 0, 85, 0.15); color: #ff3366; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
         p { margin-top: 25px; font-size: 13px; color: #8fa39b; }
-        a { color: #00ff88; text-decoration: none; font-weight: 600; transition: color 0.2s; }
-        a:hover { color: #00f2fe; text-shadow: 0 0 6px rgba(0, 242, 254, 0.4); }
+        a { color: #00ff88; text-decoration: none; font-weight: 600; }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>Join Network</h2>
-        {% if error %}
-            <div class="error-msg">{{ error }}</div>
-        {% endif %}
+        {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
         <form method="POST" action="/register">
             <input type="text" name="username" placeholder="Username" required><br>
             <input type="password" name="password" placeholder="Password" required><br>
@@ -500,96 +340,22 @@ SETUP_HTML = """
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            color: #ffffff;
-            overflow: hidden;
-            position: relative;
-        }
-        body::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0,255,136,0.12) 0%, rgba(0,242,254,0.04) 50%, transparent 70%);
-            z-index: 0;
-            pointer-events: none;
+            display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #ffffff; 
         }
         .card { 
-            position: relative;
-            z-index: 1;
-            background: rgba(10, 26, 20, 0.85); 
-            backdrop-filter: blur(14px);
-            padding: 40px 30px; 
-            border-radius: 14px; 
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2), inset 0 0 15px rgba(0, 242, 254, 0.1); 
-            border: 1px solid rgba(0, 255, 136, 0.4);
-            width: 380px; 
-            text-align: center; 
+            background: rgba(10, 26, 20, 0.85); backdrop-filter: blur(14px); 
+            padding: 40px 30px; border-radius: 14px; box-shadow: 0 0 30px rgba(0, 255, 136, 0.2); 
+            border: 1px solid rgba(0, 255, 136, 0.4); width: 380px; text-align: center; 
         }
-        h2 { 
-            margin: 0 0 10px 0;
-            font-size: 24px; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-            color: #00ff88; 
-            text-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
-            font-weight: 700;
-        }
-        p.subtitle {
-            color: #8fa39b;
-            font-size: 13px;
-            margin-bottom: 25px;
-        }
+        h2 { margin: 0 0 10px 0; font-size: 24px; text-transform: uppercase; color: #00ff88; }
+        p.subtitle { color: #8fa39b; font-size: 13px; margin-bottom: 25px; }
         input { 
-            width: 100%; 
-            padding: 12px 16px; 
-            margin: 10px 0; 
-            background: rgba(4, 16, 12, 0.8);
-            border: 1px solid rgba(0, 242, 254, 0.3); 
-            border-radius: 8px; 
-            color: #ffffff;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-        input:focus {
-            border-color: #00ff88;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+            width: 100%; padding: 12px; margin: 10px 0; background: rgba(4, 16, 12, 0.8); 
+            border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 8px; color: #ffffff; outline: none; 
         }
         button { 
-            width: 100%; 
-            padding: 12px; 
-            margin-top: 15px;
-            background: linear-gradient(90deg, #00ff88, #00b0ff); 
-            color: #04100c; 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 15px;
-            font-weight: 700; 
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            cursor: pointer; 
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
-            transition: all 0.3s ease;
-        }
-        button:hover { 
-            background: linear-gradient(90deg, #00f2fe, #00ff88); 
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
-            transform: translateY(-1px);
-        }
-        .error-msg {
-            background-color: rgba(255, 0, 85, 0.15);
-            color: #ff3366;
-            border: 1px solid rgba(255, 51, 102, 0.4);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            font-weight: 600;
+            width: 100%; padding: 12px; margin-top: 15px; background: linear-gradient(90deg, #00ff88, #00b0ff); 
+            color: #04100c; border: none; border-radius: 8px; font-weight: 700; text-transform: uppercase; cursor: pointer; 
         }
     </style>
 </head>
@@ -597,9 +363,7 @@ SETUP_HTML = """
     <div class="card">
         <h2>System Configuration</h2>
         <p class="subtitle">Please assign a designation to your automated water system.</p>
-        {% if error %}
-            <div class="error-msg">{{ error }}</div>
-        {% endif %}
+        {% if error %}<div style="color:#ff3366;">{{ error }}</div>{% endif %}
         <form method="POST" action="/setup-system">
             <input type="text" name="system_name" placeholder="e.g., Greenhouse Alpha" required><br>
             <button type="submit">Initialize System</button>
@@ -617,14 +381,29 @@ DASHBOARD_HTML = """
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); 
-            min-height: 100vh;
-            margin: 0; 
-            padding: 30px; 
+        
+        /* Themes */
+        body.theme-emerald {
+            background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%);
             color: #ffffff;
         }
+        body.theme-cyan {
+            background: linear-gradient(135deg, #081d28 0%, #0b374d 50%, #031018 100%);
+            color: #e0f7fc;
+        }
+        body.theme-oled {
+            background: #000000;
+            color: #00ff88;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            min-height: 100vh;
+            margin: 0; 
+            padding: 25px; 
+            transition: all 0.4s ease;
+        }
+        
         .header { 
             display: flex; 
             justify-content: space-between; 
@@ -635,91 +414,158 @@ DASHBOARD_HTML = """
             border-radius: 14px; 
             border: 1px solid rgba(0, 255, 136, 0.3);
             box-shadow: 0 0 20px rgba(0, 255, 136, 0.15); 
-            max-width: 900px;
+            max-width: 950px;
+            margin: 0 auto 25px auto;
+        }
+        .header h2 { margin: 0; font-size: 18px; font-weight: 600; }
+        .header h2 span { color: #00ff88; text-shadow: 0 0 8px rgba(0, 255, 136, 0.4); }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 950px;
             margin: 0 auto;
         }
-        .header h2 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 600;
-        }
-        .header h2 span {
-            color: #00ff88;
-            text-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
-        }
-        .container { 
-            background: rgba(10, 26, 20, 0.85); 
+
+        /* Large Action Button Cards */
+        .action-card {
+            background: rgba(10, 26, 20, 0.85);
             backdrop-filter: blur(14px);
-            padding: 35px; 
-            border-radius: 14px; 
-            margin: 25px auto 0 auto; 
-            max-width: 900px;
             border: 1px solid rgba(0, 242, 254, 0.3);
-            box-shadow: 0 0 25px rgba(0, 242, 254, 0.15); 
+            border-radius: 14px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
         }
-        h3, h4 {
-            color: #00f2fe;
+        .action-card:hover {
+            border-color: #00ff88;
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.25);
+            transform: translateY(-2px);
+        }
+        .action-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00ff88;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .action-desc {
+            font-size: 13px;
+            color: #a0b5ad;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            text-shadow: 0 0 6px rgba(0, 242, 254, 0.4);
-            margin-top: 0;
-            font-size: 16px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
+        .btn-motor {
+            background: linear-gradient(90deg, #00b0ff, #00ff88);
+            color: #04100c;
+            box-shadow: 0 0 15px rgba(0, 176, 255, 0.3);
+        }
+        .btn-motor:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+            transform: scale(1.02);
+        }
+        .btn-power {
+            background: linear-gradient(90deg, #ff3366, #ff6600);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 51, 102, 0.3);
+        }
+        .btn-live {
+            background: linear-gradient(90deg, #00f2fe, #00ff88);
+            color: #04100c;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+
+        /* Full Width Telemetry & Customization Sections */
+        .full-card {
+            grid-column: 1 / -1;
+            background: rgba(10, 26, 20, 0.85);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.1);
+        }
+
         .status-badge { 
             display: inline-block; 
             padding: 6px 14px; 
             border-radius: 20px; 
             font-weight: 700; 
             text-transform: uppercase; 
-            letter-spacing: 1px;
-            font-size: 13px;
+            font-size: 12px;
         }
-        .on { 
-            background-color: rgba(0, 255, 136, 0.15); 
-            color: #00ff88; 
-            border: 1px solid rgba(0, 255, 136, 0.4);
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-        }
-        .off { 
-            background-color: rgba(255, 51, 102, 0.15); 
-            color: #ff3366; 
-            border: 1px solid rgba(255, 51, 102, 0.4);
-            box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
-        }
+        .on { background-color: rgba(0, 255, 136, 0.15); color: #00ff88; border: 1px solid #00ff88; }
+        .off { background-color: rgba(255, 51, 102, 0.15); color: #ff3366; border: 1px solid #ff3366; }
+
         pre { 
             background: #020705; 
             color: #00ff88; 
             padding: 20px; 
             border-radius: 10px; 
             border: 1px solid rgba(0, 255, 136, 0.25);
-            box-shadow: inset 0 0 15px rgba(0, 255, 136, 0.1);
             font-family: 'Courier New', Courier, monospace; 
-            font-size: 15px; 
+            font-size: 14px; 
             white-space: pre-wrap; 
             word-wrap: break-word; 
-            text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
         }
-        .logout-btn { 
-            color: #ff3366; 
-            text-decoration: none; 
-            font-weight: 600; 
+
+        .custom-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .custom-input-box {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .custom-input-box label {
+            font-size: 12px;
+            color: #00f2fe;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            border: 1px solid rgba(255, 51, 102, 0.4);
-            padding: 6px 14px;
+            font-weight: 700;
+        }
+        select, input[type="text"] {
+            background: rgba(4, 16, 12, 0.8);
+            border: 1px solid rgba(0, 242, 254, 0.3);
             border-radius: 8px;
-            font-size: 13px;
-            transition: all 0.3s ease;
+            padding: 10px;
+            color: #ffffff;
+            outline: none;
         }
-        .logout-btn:hover {
-            background: #ff3366;
-            color: #04100c;
-            box-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+
+        .logout-btn { 
+            color: #ff3366; text-decoration: none; font-weight: 600; 
+            border: 1px solid rgba(255, 51, 102, 0.4); padding: 6px 14px; border-radius: 8px; font-size: 13px; 
         }
+        .logout-btn:hover { background: #ff3366; color: #04100c; }
     </style>
     <script>
-        const username = "{{ username }}";
-        const systemName = "{{ system_name }}";
+        let username = "{{ username }}";
+        let systemName = "{{ system_name }}";
+        let refreshInterval = 2000;
+        let timerId = null;
 
         async function fetchStatus() {
             try {
@@ -733,32 +579,171 @@ DASHBOARD_HTML = """
                 stateElem.className = 'status-badge ' + (isConnected ? 'on' : 'off');
                 
                 let headerTitle = document.getElementById('header-title');
-                if (isConnected) {
-                    headerTitle.innerHTML = `Hello ${username}, <span>${systemName}</span> has connected successfully!`;
-                } else {
-                    headerTitle.innerHTML = `Hello ${username}, <span>${systemName}</span> is awaiting for connection`;
-                }
+                headerTitle.innerHTML = isConnected 
+                    ? `Hello ${username}, <span id="disp-sys-name">${systemName}</span> is ONLINE`
+                    : `Hello ${username}, <span id="disp-sys-name">${systemName}</span> is awaiting connection`;
                 
                 document.getElementById('lcd').innerText = data.lcd_text;
             } catch (err) {
                 console.error("Error fetching status:", err);
             }
         }
-        setInterval(fetchStatus, 2000);
-        window.onload = fetchStatus;
+
+        // Trigger Motor Watering duration
+        async function triggerWaterMotor() {
+            let duration = prompt("How many seconds would you like to hydrate your soil?", "5");
+            if (duration && !isNaN(duration) && parseInt(duration) > 0) {
+                let seconds = parseInt(duration);
+                let message = `[MANUAL CONTROL]: Water Motor engaged for ${seconds} seconds...`;
+                
+                await fetch('/api/device', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'ON', lcd_text: message })
+                });
+                
+                fetchStatus();
+                alert(`💦 Water motor triggered for ${seconds} seconds!`);
+            }
+        }
+
+        // Toggle Power System ON/OFF
+        async function toggleSystemPower() {
+            let stateElem = document.getElementById('state');
+            let currentState = stateElem.innerText.toLowerCase();
+            let newState = (currentState === 'on') ? 'OFF' : 'ON';
+            let message = `[SYSTEM POWER]: Toggled power to ${newState}`;
+
+            await fetch('/api/device', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: newState, lcd_text: message })
+            });
+
+            fetchStatus();
+        }
+
+        // Live Telemetry Toggle
+        function toggleLiveTelemetry() {
+            let telemetrySection = document.getElementById('telemetry-section');
+            if (telemetrySection.style.display === 'none') {
+                telemetrySection.style.display = 'block';
+                telemetrySection.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                telemetrySection.style.display = 'none';
+            }
+        }
+
+        // Customization Functions
+        function changeTheme(themeName) {
+            document.body.className = '';
+            document.body.classList.add('theme-' + themeName);
+            localStorage.setItem('user_theme', themeName);
+        }
+
+        function updateRobotName() {
+            let inputName = document.getElementById('robot_name_input').value.trim();
+            if (inputName) {
+                systemName = inputName;
+                document.getElementById('disp-sys-name').innerText = systemName;
+                alert(`Robot name updated to: ${systemName}`);
+            }
+        }
+
+        function updatePollRate(val) {
+            refreshInterval = parseInt(val);
+            if (timerId) clearInterval(timerId);
+            timerId = setInterval(fetchStatus, refreshInterval);
+        }
+
+        window.onload = function() {
+            let savedTheme = localStorage.getItem('user_theme') || 'emerald';
+            changeTheme(savedTheme);
+            document.getElementById('theme_select').value = savedTheme;
+            
+            fetchStatus();
+            timerId = setInterval(fetchStatus, refreshInterval);
+        };
     </script>
 </head>
-<body>
+<body class="theme-emerald">
     <div class="header">
-        <h2 id="header-title">Hello {{ username }}, <span>{{ system_name }}</span> is awaiting for connection</h2>
+        <h2 id="header-title">Hello {{ username }}, <span id="disp-sys-name">{{ system_name }}</span></h2>
         <div><a href="/logout" class="logout-btn">Logout</a></div>
     </div>
     
-    <div class="container">
-        <h3>Live Telemetry</h3>
-        <p><strong>System State:</strong> <span id="state" class="status-badge off">Loading...</span></p>
-        <h4 style="margin-top: 30px;">LCD Display Feedback:</h4>
-        <pre id="lcd">Connecting to hardware feed...</pre>
+    <div class="dashboard-grid">
+        <!-- 1. Water Motor Action Card -->
+        <div class="action-card">
+            <div>
+                <div class="action-title">💧 Hydrate Soil (Motor)</div>
+                <div class="action-desc">
+                    Turns on your water motor so your soil can be hydrated instantly. 
+                    Prompts you to select custom duration.
+                </div>
+            </div>
+            <button onclick="triggerWaterMotor()" class="btn-action btn-motor">Start Motor</button>
+        </div>
+
+        <!-- 2. System Power Switch Card -->
+        <div class="action-card">
+            <div>
+                <div class="action-title">⚡ System On/Off</div>
+                <div class="action-desc">
+                    Master power control to remotely start up or shutdown your automated watering system.
+                </div>
+            </div>
+            <button onclick="toggleSystemPower()" class="btn-action btn-power">Toggle Power</button>
+        </div>
+
+        <!-- 3. Watch Live Status Button Card -->
+        <div class="action-card">
+            <div>
+                <div class="action-title">📡 Live Feed Screen</div>
+                <div class="action-desc">
+                    Opens up the live telemetry screen showing real-time hardware status and LCD message outputs.
+                </div>
+            </div>
+            <button onclick="toggleLiveTelemetry()" class="btn-action btn-live">Watch Status Live</button>
+        </div>
+
+        <!-- 4. Collapsible Live Telemetry Display Section -->
+        <div id="telemetry-section" class="full-card" style="display: none;">
+            <h3 style="color:#00f2fe; margin-top:0;">Live Telemetry Monitor</h3>
+            <p><strong>System Status:</strong> <span id="state" class="status-badge off">Loading...</span></p>
+            <h4 style="color:#00ff88; margin-top: 20px;">Hardware Screen Output:</h4>
+            <pre id="lcd">Connecting to hardware feed...</pre>
+        </div>
+
+        <!-- 5. Customization Options Card -->
+        <div class="full-card">
+            <h3 style="color:#00f2fe; margin-top:0;">⚙️ Customize Your System</h3>
+            <div class="custom-group">
+                <div class="custom-input-box">
+                    <label>Background Theme</label>
+                    <select id="theme_select" onchange="changeTheme(this.value)">
+                        <option value="emerald">Emerald Cyber (Dark)</option>
+                        <option value="cyan">Neon Cyan</option>
+                        <option value="oled">Midnight OLED</option>
+                    </select>
+                </div>
+
+                <div class="custom-input-box">
+                    <label>Rename System / Robot</label>
+                    <input type="text" id="robot_name_input" placeholder="{{ system_name }}">
+                    <button onclick="updateRobotName()" style="margin-top:5px; padding:6px; background:#00ff88; color:#000; border:none; border-radius:6px; font-weight:700; cursor:pointer;">Update Name</button>
+                </div>
+
+                <div class="custom-input-box">
+                    <label>Live Refresh Rate</label>
+                    <select onchange="updatePollRate(this.value)">
+                        <option value="1000">Fast (Every 1s)</option>
+                        <option value="2000" selected>Normal (Every 2s)</option>
+                        <option value="5000">Eco (Every 5s)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
@@ -813,7 +798,6 @@ init_db()
 
 @app.route("/")
 def home():
-    """Welcome screen landing page."""
     if "user" in session:
         return redirect(url_for("dashboard"))
     return render_template_string(WELCOME_HTML)
