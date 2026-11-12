@@ -407,6 +407,13 @@ DASHBOARD_HTML = """
                     let keepGoing = confirm(`Soil is at ${currentSoil.toFixed(4)} (below 0.4 target). Do you want to continue hydrating until it reaches 0.4?`);
                     if (keepGoing) {
                         alert("Watering resumed until soil moisture reaches 0.4...");
+                        // Keep motor active and loop until 0.4 is met
+                        await fetch('/api/device', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'ON', lcd_text: `[WEB]: Resumed until soil reaches 0.4...` })
+                        });
+
                         while (true) {
                             await new Promise(r => setTimeout(r, 1000));
                             let checkRes = await fetch('/api/status');
@@ -416,7 +423,7 @@ DASHBOARD_HTML = """
                     }
                 }
 
-                // 4. Turn OFF motor
+                // 4. Turn OFF motor when fully done
                 await fetch('/api/device', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
