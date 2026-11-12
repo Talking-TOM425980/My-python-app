@@ -6,7 +6,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-# Use /tmp directory on Render to avoid read-only filesystem issues
 DB_PATH = "/tmp/database.db" if os.path.exists("/tmp") else "database.db"
 
 # --- Embedded HTML Templates ---
@@ -19,158 +18,19 @@ WELCOME_HTML = """
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); 
-            margin: 0; 
-            min-height: 100vh;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-        }
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 50px;
-            background: rgba(10, 26, 20, 0.7);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0, 255, 136, 0.15);
-        }
-        .logo {
-            font-size: 20px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #00ff88;
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); margin: 0; min-height: 100vh; color: #ffffff; display: flex; flex-direction: column; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: rgba(10, 26, 20, 0.7); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 255, 136, 0.15); }
+        .logo { font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #00ff88; text-decoration: none; display: flex; align-items: center; gap: 10px; }
         .logo span { color: #00f2fe; }
-        .nav-auth {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .nav-login {
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            padding: 8px 16px;
-            transition: color 0.2s;
-        }
-        .nav-login:hover { color: #00ff88; }
-        .nav-signup {
-            background: #ffffff;
-            color: #04100c;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 700;
-            padding: 9px 18px;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            box-shadow: 0 0 15px rgba(255, 255, 136, 0.2);
-        }
-        .nav-signup:hover {
-            background: #00ff88;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
-        }
-        .hero-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 50px;
-            width: 100%;
-            gap: 50px;
-        }
+        .nav-auth { display: flex; gap: 15px; align-items: center; }
+        .nav-login { color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 8px 16px; }
+        .nav-signup { background: #ffffff; color: #04100c; text-decoration: none; font-size: 14px; font-weight: 700; padding: 9px 18px; border-radius: 6px; }
+        .hero-container { flex: 1; display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 60px 50px; width: 100%; gap: 50px; }
         .hero-content { flex: 1; max-width: 600px; }
-        h1 {
-            font-size: 52px;
-            line-height: 1.1;
-            margin: 0 0 20px 0;
-            font-weight: 800;
-            letter-spacing: -1px;
-            color: #ffffff;
-        }
-        h1 span {
-            background: linear-gradient(90deg, #00ff88, #00f2fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero-desc {
-            font-size: 17px;
-            line-height: 1.6;
-            color: #9fb3ab;
-            margin-bottom: 35px;
-        }
-        .hero-buttons { display: flex; gap: 15px; }
-        .btn-primary {
-            background: linear-gradient(90deg, #00ff88, #00b0ff);
-            color: #04100c;
-            padding: 14px 28px;
-            border-radius: 8px;
-            font-weight: 700;
-            text-decoration: none;
-            text-transform: uppercase;
-            font-size: 14px;
-            letter-spacing: 1px;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(90deg, #00f2fe, #00ff88);
-            box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
-            transform: translateY(-2px);
-        }
-        .hero-visual {
-            flex: 1;
-            background: rgba(10, 26, 20, 0.85);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            border-radius: 14px;
-            padding: 30px;
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
-        }
-        .preview-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(0,242,254,0.2);
-            padding-bottom: 15px;
-        }
-        .preview-title {
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #00f2fe;
-            font-weight: 700;
-        }
-        .live-dot {
-            width: 10px;
-            height: 10px;
-            background-color: #00ff88;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #00ff88;
-            display: inline-block;
-        }
-        .preview-box {
-            background: #020705;
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            border-radius: 8px;
-            padding: 20px;
-            color: #00ff88;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 14px;
-            line-height: 1.5;
-        }
+        h1 { font-size: 52px; line-height: 1.1; margin: 0 0 20px 0; font-weight: 800; color: #ffffff; }
+        h1 span { background: linear-gradient(90deg, #00ff88, #00f2fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-desc { font-size: 17px; line-height: 1.6; color: #9fb3ab; margin-bottom: 35px; }
+        .btn-primary { background: linear-gradient(90deg, #00ff88, #00b0ff); color: #04100c; padding: 14px 28px; border-radius: 8px; font-weight: 700; text-decoration: none; text-transform: uppercase; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -184,23 +44,8 @@ WELCOME_HTML = """
     <div class="hero-container">
         <div class="hero-content">
             <h1>Automated care for your <span>plants & systems</span></h1>
-            <p class="hero-desc">
-                Smart Plant intelligently waters your greenery based on live humidity sensor thresholds. 
-            </p>
-            <div class="hero-buttons">
-                <a href="/register" class="btn-primary">Get Started</a>
-                <a href="/login" class="nav-login" style="padding: 14px 20px; border: 1px solid rgba(0,242,254,0.3); border-radius: 8px;">Sign In &rarr;</a>
-            </div>
-        </div>
-        <div class="hero-visual">
-            <div class="preview-header">
-                <span class="preview-title">Live Hardware Telemetry Feed</span>
-                <span><span class="live-dot"></span> LIVE</span>
-            </div>
-            <div class="preview-box">
-                [SYSTEM STATUS]: ACTIVE<br>
-                [LCD FEED]: Greenhouses Online
-            </div>
+            <p class="hero-desc">Smart Plant intelligently waters your greenery based on live humidity sensor thresholds.</p>
+            <a href="/register" class="btn-primary">Get Started</a>
         </div>
     </div>
 </body>
@@ -215,17 +60,9 @@ LOGIN_HTML = """
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); 
-            display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #ffffff; 
-        }
-        .card { 
-            background: rgba(10, 26, 20, 0.85); backdrop-filter: blur(14px); padding: 40px 30px; 
-            border-radius: 14px; box-shadow: 0 0 30px rgba(0, 255, 136, 0.2); border: 1px solid rgba(0, 255, 136, 0.4); width: 350px; text-align: center; 
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #ffffff; }
+        .card { background: rgba(10, 26, 20, 0.85); backdrop-filter: blur(14px); padding: 40px 30px; border-radius: 14px; border: 1px solid rgba(0, 255, 136, 0.4); width: 350px; text-align: center; }
         h2 { margin: 0; font-size: 28px; text-transform: uppercase; color: #00ff88; }
-        h3 { margin: 5px 0 25px 0; font-size: 14px; color: #00f2fe; text-transform: uppercase; }
         input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(4, 16, 12, 0.8); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 8px; color: #ffffff; outline: none; }
         button { width: 100%; padding: 12px; margin-top: 15px; background: linear-gradient(90deg, #00ff88, #00b0ff); color: #04100c; border: none; border-radius: 8px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
         .error-msg { background: rgba(255, 0, 85, 0.15); color: #ff3366; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
@@ -236,14 +73,13 @@ LOGIN_HTML = """
 <body>
     <div class="card">
         <h2>Plant Net</h2>
-        <h3>Secure Access</h3>
         {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
         <form method="POST" action="/login">
             <input type="text" name="username" placeholder="Username" required><br>
             <input type="password" name="password" placeholder="Password" required><br>
             <button type="submit">Sign In</button>
         </form>
-        <p>New ecosystem? <a href="/register">Register</a> | <a href="/">Home</a></p>
+        <p>New ecosystem? <a href="/register">Register</a></p>
     </div>
 </body>
 </html>
@@ -258,7 +94,7 @@ REGISTER_HTML = """
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #ffffff; }
-        .card { background: rgba(10, 26, 20, 0.85); backdrop-filter: blur(14px); padding: 40px 30px; border-radius: 14px; box-shadow: 0 0 30px rgba(0, 242, 254, 0.2); border: 1px solid rgba(0, 242, 254, 0.4); width: 350px; text-align: center; }
+        .card { background: rgba(10, 26, 20, 0.85); backdrop-filter: blur(14px); padding: 40px 30px; border-radius: 14px; border: 1px solid rgba(0, 242, 254, 0.4); width: 350px; text-align: center; }
         h2 { margin: 0 0 25px 0; font-size: 26px; text-transform: uppercase; color: #00f2fe; }
         input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(4, 16, 12, 0.8); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 8px; color: #ffffff; outline: none; }
         button { width: 100%; padding: 12px; margin-top: 15px; background: linear-gradient(90deg, #00f2fe, #00ff88); color: #04100c; border: none; border-radius: 8px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
@@ -276,7 +112,7 @@ REGISTER_HTML = """
             <input type="password" name="password" placeholder="Password" required><br>
             <button type="submit">Register</button>
         </form>
-        <p>Already registered? <a href="/login">Login</a> | <a href="/">Home</a></p>
+        <p>Already registered? <a href="/login">Login</a></p>
     </div>
 </body>
 </html>
@@ -291,7 +127,7 @@ SETUP_HTML = """
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #04100c 0%, #0c241c 50%, #020705 100%); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #ffffff; }
-        .card { background: rgba(10, 26, 20, 0.85); backdrop-filter: blur(14px); padding: 40px 30px; border-radius: 14px; box-shadow: 0 0 30px rgba(0, 255, 136, 0.2); border: 1px solid rgba(0, 255, 136, 0.4); width: 380px; text-align: center; }
+        .card { background: rgba(10, 26, 20, 0.85); backdrop-filter: blur(14px); padding: 40px 30px; border-radius: 14px; border: 1px solid rgba(0, 255, 136, 0.4); width: 380px; text-align: center; }
         h2 { margin: 0 0 10px 0; font-size: 24px; text-transform: uppercase; color: #00ff88; }
         p.subtitle { color: #8fa39b; font-size: 13px; margin-bottom: 25px; }
         input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(4, 16, 12, 0.8); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 8px; color: #ffffff; outline: none; }
@@ -392,7 +228,7 @@ DASHBOARD_HTML = """
                     body: JSON.stringify({ action: 'ON', lcd_text: `[WEB]: Motor running for up to ${seconds}s (Target: 0.4)...` })
                 });
 
-                // 2. Monitor soil during duration
+                // 2. Monitor soil during initial duration
                 let currentSoil = 0.0;
                 for (let i = 0; i < seconds; i++) {
                     await new Promise(r => setTimeout(r, 1000));
@@ -407,13 +243,15 @@ DASHBOARD_HTML = """
                     let keepGoing = confirm(`Soil is at ${currentSoil.toFixed(4)} (below 0.4 target). Do you want to continue hydrating until it reaches 0.4?`);
                     if (keepGoing) {
                         alert("Watering resumed until soil moisture reaches 0.4...");
-                        // Keep motor active and loop until 0.4 is met
+                        
+                        // Keep motor active by ensuring state is ON
                         await fetch('/api/device', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ action: 'ON', lcd_text: `[WEB]: Resumed until soil reaches 0.4...` })
                         });
 
+                        // Loop until 0.4 is met
                         while (true) {
                             await new Promise(r => setTimeout(r, 1000));
                             let checkRes = await fetch('/api/status');
