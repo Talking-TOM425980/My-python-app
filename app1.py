@@ -913,8 +913,35 @@ def dashboard():
 
 # --- Real-Time API Routes ---
 
-@app.route("/api/status", methods=["GET"])
+@app.route("/api/status", methods=["GET", "POST"])
 def get_status():
+    if request.method == "POST":
+        data = request.get_json(silent=True) or request.form or {}
+        new_state = data.get("action") or data.get("state") or data.get("status")
+        new_lcd = data.get("lcd_text") or data.get("lcd")
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            if new_state and new_lcd:
+                cursor.execute("UPDATE telemetry SET device_state = ?, lcd_text = ? WHERE id = 1", (new_state, new_lcd))
+            elif new_state:
+                cursor.execute("UPDATE telemetry SET device_state = ? WHERE id = 1", (new_state,))
+            elif new_lcd:
+                cursor.execute("UPDATE telemetry SET lcd_text = ? WHERE id = 1", (new_lcd,))
+
+            conn.commit()
+            cursor.execute("SELECT device_state, lcd_text FROM telemetry WHERE id = 1")
+            row = cursor.fetchone()
+            conn.close()
+
+            if row:
+                return jsonify(state=row["device_state"], lcd_text=row["lcd_text"])
+            return jsonify(state=new_state or "off", lcd_text=new_lcd or "")
+        except Exception as e:
+            return jsonify(error=str(e)), 500
+
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
