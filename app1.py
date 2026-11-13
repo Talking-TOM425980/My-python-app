@@ -175,12 +175,19 @@ DASHBOARD_HTML = """
         .btn-power { background: linear-gradient(90deg, #ff3366, #ff6600); color: #ffffff; }
         .btn-live { background: linear-gradient(90deg, #00f2fe, #00ff88); color: #04100c; }
 
+        /* Professional Telemetry Layout styling */
         .full-card { grid-column: 1 / -1; background: rgba(10, 26, 20, 0.85); backdrop-filter: blur(14px); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 14px; padding: 25px; }
-        .status-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: 700; text-transform: uppercase; font-size: 12px; }
+        .telemetry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+        .telemetric-box { background: rgba(4, 16, 12, 0.9); border: 1px solid rgba(0, 242, 254, 0.25); border-radius: 10px; padding: 15px 20px; display: flex; flex-direction: column; gap: 8px; }
+        .telemetric-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #00f2fe; font-weight: 700; }
+        .telemetric-value { font-size: 20px; font-weight: 700; color: #ffffff; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: 700; text-transform: uppercase; font-size: 12px; }
         .on { background-color: rgba(0, 255, 136, 0.15); color: #00ff88; border: 1px solid #00ff88; }
         .off { background-color: rgba(255, 51, 102, 0.15); color: #ff3366; border: 1px solid #ff3366; }
 
-        pre { background: #020705; color: #00ff88; padding: 20px; border-radius: 10px; font-family: 'Courier New', Courier, monospace; font-size: 14px; white-space: pre-wrap; }
+        .lcd-container { margin-top: 15px; background: #020705; color: #00ff88; padding: 18px; border-radius: 10px; border: 1px solid rgba(0, 255, 136, 0.25); font-family: 'Courier New', Courier, monospace; font-size: 14px; white-space: pre-wrap; }
+
         .custom-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
         .custom-input-box { display: flex; flex-direction: column; gap: 5px; }
         .custom-input-box label { font-size: 12px; color: #00f2fe; text-transform: uppercase; font-weight: 700; }
@@ -202,9 +209,17 @@ DASHBOARD_HTML = """
                 let stateElem = document.getElementById('state');
                 let isConnected = !data.lcd_text.includes("System Initializing") && !data.lcd_text.includes("Waiting for Raspberry Pi connection");
                 
+                // Update Badge State
                 stateElem.innerText = data.state;
                 stateElem.className = 'status-badge ' + (data.state.toLowerCase() === 'on' ? 'on' : 'off');
                 
+                // Update Independent Telemetry Cards
+                document.getElementById('soil-val').innerText = (data.soil_moisture !== undefined ? data.soil_moisture.toFixed(4) : "0.0000");
+                
+                // Extract Air Humidity from LCD text or handle safely
+                let humidMatch = data.lcd_text.match(/Air Humid:\s*([0-9.]+)/);
+                document.getElementById('humid-val').innerText = humidMatch ? humidMatch[1] + "% RH" : "Active / Live";
+
                 document.getElementById('header-title').innerHTML = isConnected 
                     ? `Hello ${username}, <span id="disp-sys-name">${systemName}</span> is ONLINE`
                     : `Hello ${username}, <span id="disp-sys-name">${systemName}</span> is awaiting connection`;
@@ -215,20 +230,17 @@ DASHBOARD_HTML = """
             }
         }
 
-        // Trigger Motor with Duration, 0.4 Threshold Stop, and Prompt if Needed
         async function triggerWaterMotor() {
             let duration = prompt("How many seconds would you like to hydrate your soil?", "5");
             if (duration && !isNaN(duration) && parseInt(duration) > 0) {
                 let seconds = parseInt(duration);
                 
-                // 1. Send ON command
                 await fetch('/api/device', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'ON', lcd_text: `[WEB]: Motor running for up to ${seconds}s (Target: 0.4)...` })
                 });
 
-                // 2. Monitor soil during initial duration
                 let currentSoil = 0.0;
                 for (let i = 0; i < seconds; i++) {
                     await new Promise(r => setTimeout(r, 1000));
@@ -238,20 +250,16 @@ DASHBOARD_HTML = """
                     if (currentSoil >= 0.4) break;
                 }
 
-                // 3. If below 0.4 after timer, ask user if they want to continue until 0.4
                 if (currentSoil < 0.4) {
                     let keepGoing = confirm(`Soil is at ${currentSoil.toFixed(4)} (below 0.4 target). Do you want to continue hydrating until it reaches 0.4?`);
                     if (keepGoing) {
                         alert("Watering resumed until soil moisture reaches 0.4...");
-                        
-                        // Keep motor active by ensuring state is ON
                         await fetch('/api/device', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ action: 'ON', lcd_text: `[WEB]: Resumed until soil reaches 0.4...` })
                         });
 
-                        // Loop until 0.4 is met
                         while (true) {
                             await new Promise(r => setTimeout(r, 1000));
                             let checkRes = await fetch('/api/status');
@@ -261,7 +269,6 @@ DASHBOARD_HTML = """
                     }
                 }
 
-                // 4. Turn OFF motor when fully done
                 await fetch('/api/device', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -349,11 +356,28 @@ DASHBOARD_HTML = """
             <button onclick="toggleLiveTelemetry()" class="btn-action btn-live">Watch Status Live</button>
         </div>
 
+        <!-- Professional Independent Section Statuses Telemetry Card -->
         <div id="telemetry-section" class="full-card" style="display: none;">
-            <h3 style="color:#00f2fe; margin-top:0;">Live Telemetry Monitor</h3>
-            <p><strong>System Status:</strong> <span id="state" class="status-badge off">Loading...</span></p>
-            <h4 style="color:#00ff88; margin-top: 20px;">Hardware Screen Output:</h4>
-            <pre id="lcd">Connecting to hardware feed...</pre>
+            <h3 style="color:#00f2fe; margin-top:0; margin-bottom: 5px;">Live Telemetry & Diagnostics</h3>
+            <p style="color: #a0b5ad; font-size: 13px; margin-top: 0;">Real-time independent status sections updating directly from your hardware.</p>
+            
+            <div class="telemetry-grid">
+                <div class="telemetric-box">
+                    <span class="telemetric-label">System State</span>
+                    <div><span id="state" class="status-badge off">Loading...</span></div>
+                </div>
+                <div class="telemetric-box">
+                    <span class="telemetric-label">Soil Moisture Ratio</span>
+                    <span id="soil-val" class="telemetric-value">0.0000</span>
+                </div>
+                <div class="telemetric-box">
+                    <span class="telemetric-label">Air Humidity</span>
+                    <span id="humid-val" class="telemetric-value">-- % RH</span>
+                </div>
+            </div>
+
+            <h4 style="color:#00ff88; margin-top: 25px; margin-bottom: 10px;">Hardware LCD Feed Output:</h4>
+            <div id="lcd" class="lcd-container">Connecting to hardware feed...</div>
         </div>
 
         <div class="full-card">
