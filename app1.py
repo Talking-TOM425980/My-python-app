@@ -44,7 +44,7 @@ WELCOME_HTML = """
     <div class="hero-container">
         <div class="hero-content">
             <h1>Automated care for your <span>plants & systems</span></h1>
-            <p class="hero-desc">Smart Plant intelligently waters your greenery based on live humidity sensor thresholds.</p>
+            <p class="hero-desc">Smart Plant intelligently waters your greenery based on live environmental thresholds.</p>
             <a href="/register" class="btn-primary">Get Started</a>
         </div>
     </div>
@@ -175,12 +175,11 @@ DASHBOARD_HTML = """
         .btn-power { background: linear-gradient(90deg, #ff3366, #ff6600); color: #ffffff; }
         .btn-live { background: linear-gradient(90deg, #00f2fe, #00ff88); color: #04100c; }
 
-        /* Professional Telemetry Layout styling */
         .full-card { grid-column: 1 / -1; background: rgba(10, 26, 20, 0.85); backdrop-filter: blur(14px); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 14px; padding: 25px; }
-        .telemetry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+        .telemetry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-top: 15px; }
         .telemetric-box { background: rgba(4, 16, 12, 0.9); border: 1px solid rgba(0, 242, 254, 0.25); border-radius: 10px; padding: 15px 20px; display: flex; flex-direction: column; gap: 8px; }
         .telemetric-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #00f2fe; font-weight: 700; }
-        .telemetric-value { font-size: 20px; font-weight: 700; color: #ffffff; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        .telemetric-value { font-size: 20px; font-weight: 700; color: #ffffff; }
         
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: 700; text-transform: uppercase; font-size: 12px; }
         .on { background-color: rgba(0, 255, 136, 0.15); color: #00ff88; border: 1px solid #00ff88; }
@@ -209,16 +208,15 @@ DASHBOARD_HTML = """
                 let stateElem = document.getElementById('state');
                 let isConnected = !data.lcd_text.includes("System Initializing") && !data.lcd_text.includes("Waiting for Raspberry Pi connection");
                 
-                // Update Badge State
                 stateElem.innerText = data.state;
                 stateElem.className = 'status-badge ' + (data.state.toLowerCase() === 'on' ? 'on' : 'off');
                 
-                // Update Independent Telemetry Cards
+                // Update Independent Metrics Including Temperature
                 document.getElementById('soil-val').innerText = (data.soil_moisture !== undefined ? data.soil_moisture.toFixed(4) : "0.0000");
+                document.getElementById('temp-val').innerText = (data.temperature !== undefined ? data.temperature.toFixed(1) + " °C" : "-- °C");
                 
-                // Extract Air Humidity from LCD text or handle safely
                 let humidMatch = data.lcd_text.match(/Air Humid:\s*([0-9.]+)/);
-                document.getElementById('humid-val').innerText = humidMatch ? humidMatch[1] + "% RH" : "Active / Live";
+                document.getElementById('humid-val').innerText = humidMatch ? humidMatch[1] + "% RH" : "-- % RH";
 
                 document.getElementById('header-title').innerHTML = isConnected 
                     ? `Hello ${username}, <span id="disp-sys-name">${systemName}</span> is ONLINE`
@@ -356,10 +354,10 @@ DASHBOARD_HTML = """
             <button onclick="toggleLiveTelemetry()" class="btn-action btn-live">Watch Status Live</button>
         </div>
 
-        <!-- Professional Independent Section Statuses Telemetry Card -->
+        <!-- Independent Professional Telemetry Section With Temperature -->
         <div id="telemetry-section" class="full-card" style="display: none;">
             <h3 style="color:#00f2fe; margin-top:0; margin-bottom: 5px;">Live Telemetry & Diagnostics</h3>
-            <p style="color: #a0b5ad; font-size: 13px; margin-top: 0;">Real-time independent status sections updating directly from your hardware.</p>
+            <p style="color: #a0b5ad; font-size: 13px; margin-top: 0;">Real-time independent status cards updating directly from your hardware.</p>
             
             <div class="telemetry-grid">
                 <div class="telemetric-box">
@@ -367,8 +365,12 @@ DASHBOARD_HTML = """
                     <div><span id="state" class="status-badge off">Loading...</span></div>
                 </div>
                 <div class="telemetric-box">
-                    <span class="telemetric-label">Soil Moisture Ratio</span>
+                    <span class="telemetric-label">Soil Moisture</span>
                     <span id="soil-val" class="telemetric-value">0.0000</span>
+                </div>
+                <div class="telemetric-box">
+                    <span class="telemetric-label">Temperature</span>
+                    <span id="temp-val" class="telemetric-value">-- °C</span>
                 </div>
                 <div class="telemetric-box">
                     <span class="telemetric-label">Air Humidity</span>
@@ -434,18 +436,20 @@ def init_db():
             )
         ''')
 
+        # Added temperature column to database telemetry table
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS telemetry (
                 id INTEGER PRIMARY KEY CHECK (id = 1),
                 device_state TEXT NOT NULL,
                 soil_moisture REAL DEFAULT 0.0,
+                temperature REAL DEFAULT 0.0,
                 lcd_text TEXT NOT NULL
             )
         ''')
 
         cursor.execute('''
-            INSERT OR IGNORE INTO telemetry (id, device_state, soil_moisture, lcd_text) 
-            VALUES (1, 'off', 0.0, 'System Initializing...\nWaiting for Raspberry Pi connection...')
+            INSERT OR IGNORE INTO telemetry (id, device_state, soil_moisture, temperature, lcd_text) 
+            VALUES (1, 'off', 0.0, 0.0, 'System Initializing...\nWaiting for Raspberry Pi connection...')
         ''')
 
         conn.commit()
@@ -581,15 +585,15 @@ def get_status():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT device_state, soil_moisture, lcd_text FROM telemetry WHERE id = 1")
+        cursor.execute("SELECT device_state, soil_moisture, temperature, lcd_text FROM telemetry WHERE id = 1")
         row = cursor.fetchone()
         conn.close()
 
         if row:
-            return jsonify(state=row["device_state"], soil_moisture=row["soil_moisture"], lcd_text=row["lcd_text"])
-        return jsonify(state="off", soil_moisture=0.0, lcd_text="System Initializing...")
+            return jsonify(state=row["device_state"], soil_moisture=row["soil_moisture"], temperature=row["temperature"], lcd_text=row["lcd_text"])
+        return jsonify(state="off", soil_moisture=0.0, temperature=0.0, lcd_text="System Initializing...")
     except Exception as e:
-        return jsonify(state="off", soil_moisture=0.0, lcd_text=f"Database error: {e}"), 500
+        return jsonify(state="off", soil_moisture=0.0, temperature=0.0, lcd_text=f"Database error: {e}"), 500
 
 
 @app.route("/api/device", methods=["POST"])
@@ -597,32 +601,36 @@ def control_device():
     data = request.get_json(silent=True) or {}
     new_state = data.get("action")
     new_soil = data.get("soil")
+    new_temp = data.get("temperature")
     new_lcd = data.get("lcd_text")
 
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        if new_state and new_soil is not None and new_lcd:
+        # Dynamic update handling including temperature metrics
+        if new_state and new_soil is not None and new_temp is not None and new_lcd:
+            cursor.execute("UPDATE telemetry SET device_state = ?, soil_moisture = ?, temperature = ?, lcd_text = ? WHERE id = 1", (new_state, new_soil, new_temp, new_lcd))
+        elif new_state and new_soil is not None and new_lcd:
             cursor.execute("UPDATE telemetry SET device_state = ?, soil_moisture = ?, lcd_text = ? WHERE id = 1", (new_state, new_soil, new_lcd))
         elif new_state and new_lcd:
             cursor.execute("UPDATE telemetry SET device_state = ?, lcd_text = ? WHERE id = 1", (new_state, new_lcd))
         elif new_state:
             cursor.execute("UPDATE telemetry SET device_state = ? WHERE id = 1", (new_state,))
-        elif new_soil is not None and new_lcd:
-            cursor.execute("UPDATE telemetry SET soil_moisture = ?, lcd_text = ? WHERE id = 1", (new_soil, new_lcd))
+        elif new_soil is not None and new_temp is not None and new_lcd:
+            cursor.execute("UPDATE telemetry SET soil_moisture = ?, temperature = ?, lcd_text = ? WHERE id = 1", (new_soil, new_temp, new_lcd))
         elif new_lcd:
             cursor.execute("UPDATE telemetry SET lcd_text = ? WHERE id = 1", (new_lcd,))
 
         conn.commit()
 
-        cursor.execute("SELECT device_state, soil_moisture, lcd_text FROM telemetry WHERE id = 1")
+        cursor.execute("SELECT device_state, soil_moisture, temperature, lcd_text FROM telemetry WHERE id = 1")
         row = cursor.fetchone()
         conn.close()
 
         if row:
-            return jsonify(state=row["device_state"], soil_moisture=row["soil_moisture"], lcd_text=row["lcd_text"])
-        return jsonify(state=new_state or "off", soil_moisture=new_soil or 0.0, lcd_text=new_lcd or "")
+            return jsonify(state=row["device_state"], soil_moisture=row["soil_moisture"], temperature=row["temperature"], lcd_text=row["lcd_text"])
+        return jsonify(state=new_state or "off", soil_moisture=new_soil or 0.0, temperature=new_temp or 0.0, lcd_text=new_lcd or "")
     except Exception as e:
         return jsonify(error=str(e)), 500
 
